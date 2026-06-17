@@ -301,6 +301,7 @@ function processAgentData(json) {
     return null;
   }
   function gn(c, i) { return parseFloat(c[i]?.v) || 0; }
+  function fixName(s) { try { return decodeURIComponent(escape(s)); } catch(e) { return s; } }
 
   const savedStart = localStorage.getItem('kpi_start');
   const savedEnd   = localStorage.getItem('kpi_end');
@@ -312,7 +313,7 @@ function processAgentData(json) {
 
   rows.forEach(row => {
     const c = row.c || [];
-    const name = c[4]?.v;
+    const name = fixName(c[4]?.v);
     if (!name || String(name).trim() === '') return;
     if (name === 'Benjamin') return;
     const bucketDate = parseGvizDate(c[2]?.v);
