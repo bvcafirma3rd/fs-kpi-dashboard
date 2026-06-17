@@ -3,111 +3,741 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Follow Spy - Agent KPI Dashboard</title>
+  <title>Follow Spy – Agent KPI Dashboard</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
-    :root{--brand:#1a56db;--brand-dk:#1240a8;--green:#057a55;--red:#c81e1e;--yellow:#92400e;--bg:#f3f4f6;--surface:#ffffff;--border:#e5e7eb;--text:#111827;--muted:#6b7280;--radius:12px;}
-    *{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
-    header{background:linear-gradient(135deg,var(--brand) 0%,var(--brand-dk) 100%);color:#fff;padding:24px 32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-    header h1{font-size:1.5rem;font-weight:700;}
-    header .meta{font-size:.85rem;opacity:.85;margin-top:4px;}
-    #last-updated{font-size:.78rem;opacity:.7;}
-    #refresh-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35);color:#fff;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.85rem;}
-    #loading,#error-msg{text-align:center;padding:60px 20px;font-size:1rem;color:var(--muted);}
-    #error-msg{color:var(--red);}
-    .spinner{width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
-    @keyframes spin{to{transform:rotate(360deg);}}
-    main{padding:28px 32px;max-width:1400px;margin:0 auto;}
-    .hidden{display:none!important;}
-    .section-title{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;}
-    .kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;margin-bottom:32px;}
-    .kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;}
-    .kpi-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--brand);}
-    .kpi-card .label{font-size:.75rem;color:var(--muted);font-weight:500;margin-bottom:8px;line-height:1.3;}
-    .kpi-card .value{font-size:1.75rem;font-weight:700;line-height:1;color:var(--text);}
-    .kpi-card .sub{font-size:.72rem;color:var(--muted);margin-top:4px;}
-    .kpi-card.green::before{background:var(--green);}
-    .kpi-card.red::before{background:var(--red);}
-    .kpi-card.yellow::before{background:#d97706;}
-    .agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-bottom:32px;}
-    .agent-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
-    .agent-header{color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px;}
-    .agent-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;}
-    .agent-name{font-weight:600;font-size:.95rem;}
-    .agent-team{font-size:.75rem;opacity:.8;}
-    .agent-stats{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-    .stat-item .stat-label{font-size:.7rem;color:var(--muted);font-weight:500;}
-    .stat-item .stat-value{font-size:1.1rem;font-weight:700;color:var(--text);}
-    .stat-item .stat-value.good{color:var(--green);}
-    .stat-item .stat-value.bad{color:var(--red);}
-    .charts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:20px;margin-bottom:32px;}
-    .chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
-    .chart-card h3{font-size:.82rem;font-weight:600;color:var(--text);margin-bottom:16px;}
-    .chart-wrap{position:relative;height:220px;}
-    .table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:32px;}
-    .table-card .table-header{padding:16px 20px;border-bottom:1px solid var(--border);font-size:.82rem;font-weight:600;}
-    .table-wrap{overflow-x:auto;}
-    table{width:100%;border-collapse:collapse;font-size:.8rem;}
-    thead th{background:#f9fafb;padding:10px 14px;text-align:left;font-weight:600;color:var(--muted);font-size:.72rem;text-transform:uppercase;white-space:nowrap;border-bottom:1px solid var(--border);}
-    tbody td{padding:11px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
-    tbody tr:last-child td{border-bottom:none;}
-    tbody tr:hover td{background:#f9fafb;}
-    tbody tr.avg-row td{background:#eff6ff;font-weight:600;color:var(--brand);}
-    .pill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:.7rem;font-weight:600;}
-    .pill.green{background:#d1fae5;color:var(--green);}
-    .pill.red{background:#fee2e2;color:var(--red);}
-    .pill.yellow{background:#fef3c7;color:var(--yellow);}
-    footer{text-align:center;padding:24px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--border);}
-    @media(max-width:640px){main{padding:20px 16px;}header{padding:16px;}.kpi-grid{grid-template-columns:repeat(2,1fr);}.charts-grid{grid-template-columns:1fr;}}
+    :root {
+      --brand:    #1a56db;
+      --brand-dk: #1240a8;
+      --green:    #057a55;
+      --red:      #c81e1e;
+      --yellow:   #92400e;
+      --bg:       #f3f4f6;
+      --surface:  #ffffff;
+      --border:   #e5e7eb;
+      --text:     #111827;
+      --muted:    #6b7280;
+      --radius:   12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, var(--brand) 0%, var(--brand-dk) 100%);
+      color: #fff;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.3px; }
+    header .meta { font-size: .85rem; opacity: .85; margin-top: 4px; }
+    #last-updated { font-size: .78rem; opacity: .7; }
+    #refresh-btn {
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.35);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: .85rem;
+      transition: background .2s;
+    }
+    #refresh-btn:hover { background: rgba(255,255,255,.3); }
+
+    /* ── Loading/Error ── */
+    #loading, #error-msg {
+      text-align: center;
+      padding: 60px 20px;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+    #error-msg { color: var(--red); }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 4px solid var(--border);
+      border-top-color: var(--brand);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Main layout ── */
+    main { padding: 28px 32px; max-width: 1400px; margin: 0 auto; }
+    .hidden { display: none !important; }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    /* ── KPI cards ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .kpi-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--brand);
+    }
+    .kpi-card .label {
+      font-size: .75rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .kpi-card .value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--text);
+    }
+    .kpi-card .sub {
+      font-size: .72rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .kpi-card.green::before { background: var(--green); }
+    .kpi-card.red::before   { background: var(--red); }
+    .kpi-card.yellow::before { background: #d97706; }
+
+    /* ── Agent cards ── */
+    .agent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .agent-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .agent-header {
+      background: var(--brand);
+      color: #fff;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .agent-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem;
+    }
+    .agent-name { font-weight: 600; font-size: .95rem; }
+    .agent-team { font-size: .75rem; opacity: .8; }
+    .agent-stats {
+      padding: 16px 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-item .stat-label {
+      font-size: .7rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .stat-item .stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .stat-item .stat-value.good { color: var(--green); }
+    .stat-item .stat-value.bad  { color: var(--red); }
+
+    /* ── Charts ── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .chart-card h3 {
+      font-size: .82rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+    .chart-wrap { position: relative; height: 220px; }
+
+    /* ── Full table ── */
+    .table-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-bottom: 32px;
+    }
+    .table-card .table-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-size: .82rem;
+      font-weight: 600;
+    }
+    .table-wrap { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .8rem;
+    }
+    thead th {
+      background: #f9fafb;
+      padding: 10px 14px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      padding: 11px 14px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f9fafb; }
+    tbody tr.avg-row td {
+      background: #eff6ff;
+      font-weight: 600;
+      color: var(--brand);
+    }
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .7rem;
+      font-weight: 600;
+    }
+    .pill.green { background: #d1fae5; color: var(--green); }
+    .pill.red   { background: #fee2e2; color: var(--red); }
+    .pill.yellow{ background: #fef3c7; color: var(--yellow); }
+
+    /* ── AHT section ── */
+    .aht-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    /* ── Date controls ── */
+    .date-bar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 14px 32px;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      font-size: .82rem;
+    }
+    .date-bar label { font-weight: 600; color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; }
+    .date-bar input[type="date"] {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: .82rem;
+      color: var(--text);
+      background: #f9fafb;
+      cursor: pointer;
+    }
+    .date-bar input[type="date"]:focus { outline: none; border-color: var(--brand); background: #fff; }
+    .date-bar .sep { color: var(--muted); }
+    .btn-apply {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 16px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-apply:hover { background: var(--brand-dk); }
+    .btn-sheet {
+      background: #fff;
+      color: var(--brand);
+      border: 1px solid var(--brand);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background .2s;
+    }
+    .btn-sheet:hover { background: #eff6ff; }
+    .date-hint { font-size: .72rem; color: var(--muted); margin-left: 4px; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: .75rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+      main { padding: 20px 16px; }
+      header { padding: 16px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .charts-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
+
 <header>
   <div>
-    <h1>Follow Spy - Agent KPI Dashboard</h1>
-    <div class="meta" id="date-range">Loading...</div>
+    <h1>📊 Follow Spy – Agent KPI Dashboard</h1>
+    <div class="meta" id="date-range">Loading…</div>
     <div id="last-updated"></div>
   </div>
-  <button id="refresh-btn" onclick="loadData()">Refresh</button>
+  <button id="refresh-btn" onclick="loadData()">⟳ Refresh</button>
 </header>
-<div id="loading"><div class="spinner"></div>Fetching latest data from Google Sheets...</div>
+
+<!-- Date range controls -->
+<div class="date-bar">
+  <label>Date Range</label>
+  <input type="date" id="input-start" title="Start date" />
+  <span class="sep">→</span>
+  <input type="date" id="input-end" title="End date" />
+  <button class="btn-apply" onclick="applyDates()">Apply &amp; Refresh</button>
+  <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1bR22GOVswhKrWGG3khHQ-7gvyP6nwx8LZBFJgZlO2wQ/edit?gid=0#gid=0" target="_blank">✏️ Edit in Sheet</a>
+  <span class="date-hint">Tip: update dates in the Sheet first, then Apply &amp; Refresh</span>
+</div>
+
+<div id="loading">
+  <div class="spinner"></div>
+  Fetching latest data from Google Sheets…
+</div>
 <div id="error-msg" class="hidden"></div>
+
 <main id="dashboard" class="hidden">
+
+  <!-- Team Summary KPIs -->
   <div class="section-title">Team Averages</div>
   <div class="kpi-grid" id="kpi-cards"></div>
+
+  <!-- Agent Cards -->
   <div class="section-title">Agent Performance</div>
   <div class="agent-grid" id="agent-cards"></div>
+
+  <!-- Charts -->
   <div class="section-title">Comparison Charts</div>
   <div class="charts-grid">
-    <div class="chart-card"><h3>Total Messages + Calls</h3><div class="chart-wrap"><canvas id="chart-messages"></canvas></div></div>
-    <div class="chart-card"><h3>Avg Responses per Day</h3><div class="chart-wrap"><canvas id="chart-responses"></canvas></div></div>
-    <div class="chart-card"><h3>Conversations Closed</h3><div class="chart-wrap"><canvas id="chart-convos"></canvas></div></div>
-    <div class="chart-card"><h3>% Login Time Utilized</h3><div class="chart-wrap"><canvas id="chart-login"></canvas></div></div>
-    <div class="chart-card"><h3>Avg Handle Time by Channel (min)</h3><div class="chart-wrap"><canvas id="chart-aht"></canvas></div></div>
-    <div class="chart-card"><h3>Active Hours Logged</h3><div class="chart-wrap"><canvas id="chart-hours"></canvas></div></div>
+    <div class="chart-card">
+      <h3>Total Messages + Calls</h3>
+      <div class="chart-wrap"><canvas id="chart-messages"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Avg Responses per Day</h3>
+      <div class="chart-wrap"><canvas id="chart-responses"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Conversations Closed</h3>
+      <div class="chart-wrap"><canvas id="chart-convos"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>% Login Time Utilized</h3>
+      <div class="chart-wrap"><canvas id="chart-login"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Avg Handle Time by Channel (min)</h3>
+      <div class="chart-wrap"><canvas id="chart-aht"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <h3>Active Hours Logged</h3>
+      <div class="chart-wrap"><canvas id="chart-hours"></canvas></div>
+    </div>
   </div>
+
+  <!-- Full Data Table -->
   <div class="section-title">Full Metrics Table</div>
   <div class="table-card">
-    <div class="table-header">All Channels - Agent Detail</div>
-    <div class="table-wrap"><table><thead id="table-head"></thead><tbody id="table-body"></tbody></table></div>
+    <div class="table-header">All Channels – Agent Detail</div>
+    <div class="table-wrap">
+      <table>
+        <thead id="table-head"></thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
   </div>
+
 </main>
-<footer>Data source: <a href="https://docs.google.com/spreadsheets/d/1bR22GOVswhKrWGG3khHQ-7gvyP6nwx8LZBFJgZlO2wQ" target="_blank">Adly - Gladly Agent Reporting</a></footer>
+
+<footer>
+  Data source: <a href="https://docs.google.com/spreadsheets/d/1bR22GOVswhKrWGG3khHQ-7gvyP6nwx8LZBFJgZlO2wQ" target="_blank">Adly – Gladly Agent Reporting</a>
+  &nbsp;·&nbsp; Dashboard auto-fetches on load
+</footer>
+
 <script>
-const SHEET_ID='1bR22GOVswhKrWGG3khHQ-7gvyP6nwx8LZBFJgZlO2wQ';
-const COLORS=['#1a56db','#057a55','#d97706','#7c3aed','#db2777'];
-function parseNum(v){if(!v)return 0;return parseFloat(String(v).replace('%',''))||0;}
-let charts={};
-function destroyCharts(){Object.values(charts).forEach(c=>c&&c.destroy());charts={};}
-function makeChart(id,type,labels,datasets,opts){opts=opts||{};const ctx=document.getElementById(id);if(!ctx)return;charts[id]=new Chart(ctx,{type,data:{labels,datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:10}}},scales:type!=='pie'?{y:{beginAtZero:true,grid:{color:'#f3f4f6'},ticks:{font:{size:11}}},x:{grid:{display:false},ticks:{font:{size:11}}}}:{},...(opts.extra||{})}});}
-async function loadData(){const loading=document.getElementById('loading');const dashboard=document.getElementById('dashboard');loading.classList.remove('hidden');dashboard.classList.add('hidden');const url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:json&sheet=Dashboard';try{const res=await fetch(url);const text=await res.text();const json=JSON.parse(text.replace(/^[^(]+(/,'').replace(/);?s*$/,''));processGviz(json);}catch(e){console.warn('Live fetch failed',e);processSnapshot();}}
-function processGviz(json){const rows=json.table.rows;let startDate='',endDate='',team='';try{startDate=rows[1]&&rows[1].c[2]&&rows[1].c[2].v||'';endDate=rows[1]&&rows[1].c[3]&&rows[1].c[3].v||'';team=rows[1]&&rows[1].c[4]&&rows[1].c[4].v||'Follow Spy';}catch(e){}document.getElementById('date-range').textContent=team+' - '+startDate+' to '+endDate;document.getElementById('last-updated').textContent='Last updated: '+new Date().toLocaleString();const agents=[];let avgRow=null;rows.forEach(function(row,i){if(i<2)return;const c=row.c||[];const name=c[1]&&c[1].v;if(!name)return;if(String(name).toLowerCase()==='averages'){avgRow=c;return;}agents.push({name:name,totalMsg:parseNum(c[2]&&c[2].v),daysWorked:parseNum(c[3]&&c[3].v),avgResp:parseNum(c[4]&&c[4].v),convoClosed:parseNum(c[5]&&c[5].v),handleTime:parseNum(c[6]&&c[6].v),avgCust:parseNum(c[7]&&c[7].v),custHr:parseNum(c[8]&&c[8].v),activeHrs:parseNum(c[9]&&c[9].v),respHr:parseNum(c[10]&&c[10].v),tasksCreated:parseNum(c[11]&&c[11].v),tasksClosed:parseNum(c[12]&&c[12].v),loginPct:parseNum(c[14]&&c[14].v),hrsActive:parseNum(c[15]&&c[15].v),awayHrs:parseNum(c[16]&&c[16].v),emailAHT:parseNum(c[18]&&c[18].v),chatAHT:parseNum(c[19]&&c[19].v),taskAHT:parseNum(c[22]&&c[22].v)});});const avg=avgRow?{totalMsg:parseNum(avgRow[2]&&avgRow[2].v),daysWorked:parseNum(avgRow[3]&&avgRow[3].v),avgResp:parseNum(avgRow[4]&&avgRow[4].v),convoClosed:parseNum(avgRow[5]&&avgRow[5].v),handleTime:parseNum(avgRow[6]&&avgRow[6].v),avgCust:parseNum(avgRow[7]&&avgRow[7].v),custHr:parseNum(avgRow[8]&&avgRow[8].v),activeHrs:parseNum(avgRow[9]&&avgRow[9].v),respHr:parseNum(avgRow[10]&&avgRow[10].v),tasksCreated:parseNum(avgRow[11]&&avgRow[11].v),tasksClosed:parseNum(avgRow[12]&&avgRow[12].v),loginPct:parseNum(avgRow[14]&&avgRow[14].v),hrsActive:parseNum(avgRow[15]&&avgRow[15].v),awayHrs:parseNum(avgRow[16]&&avgRow[16].v),emailAHT:parseNum(avgRow[18]&&avgRow[18].v),chatAHT:parseNum(avgRow[19]&&avgRow[19].v),taskAHT:parseNum(avgRow[22]&&avgRow[22].v)}:computeAvg(agents);renderDashboard(agents,avg);}
-function processSnapshot(){document.getElementById('date-range').textContent='Follow Spy - 6/1/2026 to 6/14/2026 (snapshot)';document.getElementById('last-updated').textContent='Snapshot loaded: '+new Date().toLocaleString();const agents=[{name:'Geal Ann Lorico',totalMsg:611,daysWorked:10,avgResp:61.1,convoClosed:209,handleTime:7,avgCust:20.9,custHr:3,activeHrs:71.6,respHr:8.53,tasksCreated:19,tasksClosed:4,loginPct:89.05,hrsActive:7.16,awayHrs:8.80,emailAHT:90,chatAHT:31,taskAHT:3.8},{name:'Roynalyn Malcampo',totalMsg:995,daysWorked:10,avgResp:99.5,convoClosed:332,handleTime:7,avgCust:33.2,custHr:4,activeHrs:74.2,respHr:13.40,tasksCreated:1,tasksClosed:21,loginPct:90.83,hrsActive:7.42,awayHrs:7.49,emailAHT:132,chatAHT:61,taskAHT:14.1}];const avg={totalMsg:803,daysWorked:10,avgResp:80,convoClosed:271,handleTime:7,avgCust:27,custHr:3.7,activeHrs:73,respHr:10.97,tasksCreated:10,tasksClosed:13,loginPct:89.94,hrsActive:7.29,awayHrs:8.15,emailAHT:111,chatAHT:45.92,taskAHT:8.94};renderDashboard(agents,avg);}
-function computeAvg(agents){if(!agents.length)return{};const keys=Object.keys(agents[0]).filter(function(k){return k!=='name';});const out={};keys.forEach(function(k){out[k]=Math.round((agents.reduce(function(s,a){return s+a[k];},0)/agents.length)*100)/100;});return out;}
-function renderDashboard(agents,avg){destroyCharts();const kpiDefs=[{key:'totalMsg',label:'Avg Total Messages<br>+ Calls',fmt:function(v){return v.toLocaleString();},color:'default'},{key:'convoClosed',label:'Avg Conversations<br>Closed',fmt:function(v){return v.toLocaleString();},color:'default'},{key:'avgResp',label:'Avg Responses<br>per Day',fmt:function(v){return v;},color:'default'},{key:'avgCust',label:'Avg Customers<br>per Day',fmt:function(v){return v;},color:'default'},{key:'loginPct',label:'% Login Time<br>Utilized',fmt:function(v){return v+'%';},color:'green'},{key:'respHr',label:'Avg Responses<br>per Hour',fmt:function(v){return v;},color:'default'},{key:'hrsActive',label:'Avg Hours Active<br>per Day',fmt:function(v){return v+' hrs';},color:'default'},{key:'handleTime',label:'Handle Time /<br>Customer (min)',fmt:function(v){return v+' min';},color:'default'},{key:'emailAHT',label:'Email AHT<br>(minutes)',fmt:function(v){return v+' min';},color:'yellow'},{key:'chatAHT',label:'Chat AHT<br>(minutes)',fmt:function(v){return v+' min';},color:'yellow'},{key:'taskAHT',label:'Task AHT<br>(minutes)',fmt:function(v){return v+' min';},color:'yellow'},{key:'daysWorked',label:'Days Worked<br>> 4 hrs',fmt:function(v){return v+' days';},color:'green'}];const kpiEl=document.getElementById('kpi-cards');kpiEl.innerHTML='';kpiDefs.forEach(function(d){const val=avg[d.key]||0;kpiEl.innerHTML+='<div class="kpi-card '+d.color+'"><div class="label">'+d.label+'</div><div class="value">'+d.fmt(val)+'</div><div class="sub">Team average</div></div>';});const agentEl=document.getElementById('agent-cards');agentEl.innerHTML='';agents.forEach(function(a,i){const initials=a.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();const hdrColor=COLORS[i%COLORS.length];const loginCls=a.loginPct>=90?'good':a.loginPct>=80?'':'bad';const respCls=a.avgResp>=avg.avgResp?'good':'bad';agentEl.innerHTML+='<div class="agent-card"><div class="agent-header" style="background:'+hdrColor+'"><div class="agent-avatar">'+initials+'</div><div><div class="agent-name">'+a.name+'</div><div class="agent-team">Follow Spy - '+a.daysWorked+' days worked</div></div></div><div class="agent-stats"><div class="stat-item"><div class="stat-label">Total Messages + Calls</div><div class="stat-value">'+a.totalMsg.toLocaleString()+'</div></div><div class="stat-item"><div class="stat-label">Convos Closed</div><div class="stat-value">'+a.convoClosed+'</div></div><div class="stat-item"><div class="stat-label">Avg Responses/Day</div><div class="stat-value '+respCls+'">'+a.avgResp+'</div></div><div class="stat-item"><div class="stat-label">Avg Customers/Day</div><div class="stat-value">'+a.avgCust+'</div></div><div class="stat-item"><div class="stat-label">% Login Utilized</div><div class="stat-value '+loginCls+'">'+a.loginPct+'%</div></div><div class="stat-item"><div class="stat-label">Responses/Hour</div><div class="stat-value">'+a.respHr+'</div></div><div class="stat-item"><div class="stat-label">Active Hours</div><div class="stat-value">'+a.activeHrs+' hrs</div></div><div class="stat-item"><div class="stat-label">Tasks Created / Closed</div><div class="stat-value">'+a.tasksCreated+' / '+a.tasksClosed+'</div></div></div></div>';});const names=agents.map(function(a){return a.name;});makeChart('chart-messages','bar',names,[{label:'Total Messages + Calls',data:agents.map(function(a){return a.totalMsg;}),backgroundColor:COLORS,borderRadius:6}]);makeChart('chart-responses','bar',names,[{label:'Avg Responses/Day',data:agents.map(function(a){return a.avgResp;}),backgroundColor:COLORS,borderRadius:6}]);makeChart('chart-convos','bar',names,[{label:'Conversations Closed',data:agents.map(function(a){return a.convoClosed;}),backgroundColor:COLORS,borderRadius:6}]);makeChart('chart-login','bar',names,[{label:'% Login Utilized',data:agents.map(function(a){return a.loginPct;}),backgroundColor:COLORS,borderRadius:6}],{pct:true,extra:{scales:{y:{min:80,max:100,grid:{color:'#f3f4f6'}}}}});makeChart('chart-aht','bar',names,[{label:'Email',data:agents.map(function(a){return a.emailAHT;}),backgroundColor:'#1a56db',borderRadius:4},{label:'Chat',data:agents.map(function(a){return a.chatAHT;}),backgroundColor:'#057a55',borderRadius:4},{label:'Task',data:agents.map(function(a){return a.taskAHT;}),backgroundColor:'#d97706',borderRadius:4}]);makeChart('chart-hours','bar',names,[{label:'Active Hours Logged',data:agents.map(function(a){return a.activeHrs;}),backgroundColor:COLORS,borderRadius:6}]);const thead=document.getElementById('table-head');const tbody=document.getElementById('table-body');const cols=['Agent','Total Msgs+Calls','Days 4hr+','Avg Resp/Day','Convos Closed','Handle Time (min)','Avg Cust/Day','Cust/Hr','Active Hrs','Resp/Hr','Tasks Created','Tasks Closed','% Login','Hrs Active/Day','Away Hrs','Email AHT','Chat AHT','Task AHT'];thead.innerHTML='<tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';function row(a,isAvg){const loginCls=!isAvg&&a.loginPct>=90?'pill green':!isAvg&&a.loginPct<85?'pill red':'pill yellow';return '<tr '+(isAvg?'class="avg-row"':'')+'><td><strong>'+(a.name||'Averages')+'</strong></td><td>'+(a.totalMsg?a.totalMsg.toLocaleString():'')+'</td><td>'+(a.daysWorked||'')+'</td><td>'+(a.avgResp||'')+'</td><td>'+(a.convoClosed||'')+'</td><td>'+(a.handleTime||'')+'</td><td>'+(a.avgCust||'')+'</td><td>'+(a.custHr||'')+'</td><td>'+(a.activeHrs||'')+'</td><td>'+(a.respHr||'')+'</td><td>'+(a.tasksCreated||'')+'</td><td>'+(a.tasksClosed||'')+'</td><td><span class="'+(isAvg?'':loginCls)+'">'+(a.loginPct||'')+(isAvg?'%':'')+'</span></td><td>'+(a.hrsActive||'')+'</td><td>'+(a.awayHrs||'')+'</td><td>'+(a.emailAHT||'')+'</td><td>'+(a.chatAHT||'')+'</td><td>'+(a.taskAHT||'')+'</td></tr>';}
-tbody.innerHTML=agents.map(function(a){return row(a,false);}).join('')+row(Object.assign({name:'Averages'},avg),true);document.getElementById('loading').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden');}
-loadData();
-</script>
-</body>
-</html>
+/* ── CONFIG ── */
+const SHEET_ID = '1bR22GOVswhKrWGG3khHQ-7gvyP6nwx8LZBFJgZlO2wQ';
+
+/* ── DATE CONTROLS ── */
+function isoToDisplay(iso) {
+  if (!iso) return '';
+  const [y,m,d] = iso.split('-');
+  return `${parseInt(m)}/${parseInt(d)}/${y}`;
+}
+function displayToIso(str) {
+  if (!str) return '';
+  // handles M/D/YYYY or MM/DD/YYYY
+  const parts = String(str).split('/');
+  if (parts.length === 3) {
+    const [m, d, y] = parts;
+    return `${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
+  }
+  return '';
+}
+function loadSavedDates() {
+  const s = localStorage.getItem('kpi_start');
+  const e = localStorage.getItem('kpi_end');
+  if (s) document.getElementById('input-start').value = s;
+  if (e) document.getElementById('input-end').value = e;
+}
+function saveDates(startIso, endIso) {
+  if (startIso) localStorage.setItem('kpi_start', startIso);
+  if (endIso)   localStorage.setItem('kpi_end', endIso);
+}
+function applyDates() {
+  const s = document.getElementById('input-start').value;
+  const e = document.getElementById('input-end').value;
+  saveDates(s, e);
+  loadData();
+}
+// Sync date inputs from sheet data after load
+function syncDateInputs(startStr, endStr) {
+  const startIso = displayToIso(startStr);
+  const endIso   = displayToIso(endStr);
+  const inputS = document.getElementById('input-start');
+  const inputE = document.getElementById('input-end');
+  // Only update inputs if user hasn't overridden
+  if (!localStorage.getItem('kpi_start') && startIso) inputS.value = startIso;
+  if (!localStorage.getItem('kpi_end')   && endIso)   inputE.value = endIso;
+}
+const COLORS   = ['#1a56db','#057a55','#d97706','#7c3aed','#db2777'];
+const COLORS_LIGHT = ['rgba(26,86,219,.15)','rgba(5,122,85,.15)','rgba(217,119,6,.15)','rgba(124,58,237,.15)','rgba(219,39,119,.15)'];
+
+/* ── DATA MAPPING ── */
+// Dashboard sheet column indices (0-based after first two blank cols)
+// Col index in CSV row: 0=blank, 1=name, 2=totalMsg, 3=daysWorked, 4=avgResp,
+//   5=convoClosed, 6=handleTime, 7=avgCust, 8=custHr, 9=activeHrs,
+//   10=respHr, 11=tasksCreated, 12=tasksClosed, 13=extra, 14=loginPct,
+//   15=hrsActive, 16=awayHrs, 17=blank, 18=emailAHT, 19=chatAHT,
+//   20=col20, 21=col21, 22=taskAHT, ...
+
+function parseNum(v) {
+  if (!v) return 0;
+  return parseFloat(String(v).replace('%','')) || 0;
+}
+
+let charts = {};
+
+function destroyCharts() {
+  Object.values(charts).forEach(c => c && c.destroy());
+  charts = {};
+}
+
+function makeChart(id, type, labels, datasets, opts={}) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, {
+    type,
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 10 } },
+        tooltip: { callbacks: {
+          label: ctx => {
+            const v = ctx.parsed.y ?? ctx.parsed;
+            return ` ${ctx.dataset.label}: ${v}${opts.pct ? '%' : ''}`;
+          }
+        }}
+      },
+      scales: type !== 'pie' ? {
+        y: { beginAtZero: true, grid: { color: '#f3f4f6' }, ticks: { font: { size: 11 } } },
+        x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      } : {},
+      ...opts.extra
+    }
+  });
+}
+
+async function loadData() {
+  const loading   = document.getElementById('loading');
+  const dashboard = document.getElementById('dashboard');
+  const errorMsg  = document.getElementById('error-msg');
+
+  loading.classList.remove('hidden');
+  dashboard.classList.add('hidden');
+  errorMsg.classList.add('hidden');
+
+  const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Dashboard`;
+
+  try {
+    const res  = await fetch(url);
+    const text = await res.text();
+    // Strip google's JSONP wrapper
+    const json = JSON.parse(text.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, ''));
+    processGviz(json);
+  } catch(e) {
+    // Fallback: hardcoded snapshot data
+    console.warn('Live fetch failed, using snapshot data:', e);
+    processSnapshot();
+  }
+}
+
+/* ── Process Google Visualization JSON ── */
+function processGviz(json) {
+  const rows = json.table.rows;
+
+  // Row 0 = headers meta (Start Date, End Date, Team)
+  // Row 1 = dates
+  // Row 2+ = agents (skip rows where col1 is empty or 'Averages')
+
+  let startDate = '', endDate = '', team = '';
+  try {
+    startDate = rows[1]?.c[2]?.v || '';
+    endDate   = rows[1]?.c[3]?.v || '';
+    team      = rows[1]?.c[4]?.v || 'Follow Spy';
+  } catch(e) {}
+
+  // Format date helper
+  const fmt = (d) => {
+    if (!d) return '';
+    if (typeof d === 'string') return d;
+    // GViz Date(year,month,day)
+    if (typeof d === 'object' && d.v) return d.v;
+    return String(d);
+  };
+
+  const fmtStart = fmt(startDate);
+  const fmtEnd   = fmt(endDate);
+  document.getElementById('date-range').textContent =
+    `${team} · ${fmtStart} – ${fmtEnd}`;
+  document.getElementById('last-updated').textContent =
+    `Last updated: ${new Date().toLocaleString()}`;
+  syncDateInputs(fmtStart, fmtEnd);
+
+  const agents = [];
+  let avgRow = null;
+
+  rows.forEach((row, i) => {
+    if (i < 2) return; // skip header rows
+    const c = row.c || [];
+    const name = c[1]?.v;
+    if (!name) return;
+    if (String(name).toLowerCase() === 'averages') {
+      avgRow = c; return;
+    }
+    agents.push({
+      name,
+      totalMsg:      parseNum(c[2]?.v),
+      daysWorked:    parseNum(c[3]?.v),
+      avgResp:       parseNum(c[4]?.v),
+      convoClosed:   parseNum(c[5]?.v),
+      handleTime:    parseNum(c[6]?.v),
+      avgCust:       parseNum(c[7]?.v),
+      custHr:        parseNum(c[8]?.v),
+      activeHrs:     parseNum(c[9]?.v),
+      respHr:        parseNum(c[10]?.v),
+      tasksCreated:  parseNum(c[11]?.v),
+      tasksClosed:   parseNum(c[12]?.v),
+      loginPct:      parseNum(c[14]?.v),
+      hrsActive:     parseNum(c[15]?.v),
+      awayHrs:       parseNum(c[16]?.v),
+      emailAHT:      parseNum(c[18]?.v),
+      chatAHT:       parseNum(c[19]?.v),
+      taskAHT:       parseNum(c[22]?.v),
+    });
+  });
+
+  const avg = avgRow ? {
+    totalMsg:    parseNum(avgRow[2]?.v),
+    daysWorked:  parseNum(avgRow[3]?.v),
+    avgResp:     parseNum(avgRow[4]?.v),
+    convoClosed: parseNum(avgRow[5]?.v),
+    handleTime:  parseNum(avgRow[6]?.v),
+    avgCust:     parseNum(avgRow[7]?.v),
+    custHr:      parseNum(avgRow[8]?.v),
+    activeHrs:   parseNum(avgRow[9]?.v),
+    respHr:      parseNum(avgRow[10]?.v),
+    tasksCreated:parseNum(avgRow[11]?.v),
+    tasksClosed: parseNum(avgRow[12]?.v),
+    loginPct:    parseNum(avgRow[14]?.v),
+    hrsActive:   parseNum(avgRow[15]?.v),
+    awayHrs:     parseNum(avgRow[16]?.v),
+    emailAHT:    parseNum(avgRow[18]?.v),
+    chatAHT:     parseNum(avgRow[19]?.v),
+    taskAHT:     parseNum(avgRow[22]?.v),
+  } : computeAvg(agents);
+
+  renderDashboard(agents, avg);
+}
+
+/* ── Fallback snapshot data ── */
+function processSnapshot() {
+  const snapStart = '6/1/2026', snapEnd = '6/14/2026';
+  document.getElementById('date-range').textContent =
+    `Follow Spy · ${snapStart} – ${snapEnd} (snapshot)`;
+  document.getElementById('last-updated').textContent =
+    `Snapshot loaded: ${new Date().toLocaleString()}`;
+  syncDateInputs(snapStart, snapEnd);
+
+  const agents = [
+    {
+      name: 'Geal Ann Lorico',
+      totalMsg:611, daysWorked:10, avgResp:61.1, convoClosed:209,
+      handleTime:7, avgCust:20.9, custHr:3, activeHrs:71.6,
+      respHr:8.53, tasksCreated:19, tasksClosed:4,
+      loginPct:89.05, hrsActive:7.16, awayHrs:8.80,
+      emailAHT:90, chatAHT:31, taskAHT:3.8,
+    },
+    {
+      name: 'Roynalyn Malcampo',
+      totalMsg:995, daysWorked:10, avgResp:99.5, convoClosed:332,
+      handleTime:7, avgCust:33.2, custHr:4, activeHrs:74.2,
+      respHr:13.40, tasksCreated:1, tasksClosed:21,
+      loginPct:90.83, hrsActive:7.42, awayHrs:7.49,
+      emailAHT:132, chatAHT:61, taskAHT:14.1,
+    },
+  ];
+  const avg = {
+    totalMsg:803, daysWorked:10, avgResp:80, convoClosed:271,
+    handleTime:7, avgCust:27, custHr:3.7, activeHrs:73,
+    respHr:10.97, tasksCreated:10, tasksClosed:13,
+    loginPct:89.94, hrsActive:7.29, awayHrs:8.15,
+    emailAHT:111, chatAHT:45.92, taskAHT:8.94,
+  };
+  renderDashboard(agents, avg);
+}
+
+function computeAvg(agents) {
+  if (!agents.length) return {};
+  const keys = Object.keys(agents[0]).filter(k => k !== 'name');
+  const out = {};
+  keys.forEach(k => {
+    out[k] = Math.round((agents.reduce((s,a) => s + a[k], 0) / agents.length) * 100) / 100;
+  });
+  return out;
+}
+
+/* ── Render ── */
+function renderDashboard(agents, avg) {
+  destroyCharts();
+
+  // KPI cards
+  const kpiDefs = [
+    { key: 'totalMsg',     label: 'Avg Total Messages\n+ Calls',      fmt: v => v.toLocaleString(), color: 'default' },
+    { key: 'convoClosed',  label: 'Avg Conversations\nClosed',         fmt: v => v.toLocaleString(), color: 'default' },
+    { key: 'avgResp',      label: 'Avg Responses\nper Day',            fmt: v => v,                  color: 'default' },
+    { key: 'avgCust',      label: 'Avg Customers\nper Day',            fmt: v => v,                  color: 'default' },
+    { key: 'loginPct',     label: '% Login Time\nUtilized',            fmt: v => v + '%',            color: 'green'   },
+    { key: 'respHr',       label: 'Avg Responses\nper Hour',           fmt: v => v,                  color: 'default' },
+    { key: 'hrsActive',    label: 'Avg Hours Active\nper Day',         fmt: v => v + ' hrs',         color: 'default' },
+    { key: 'handleTime',   label: 'Handle Time /\nCustomer (min)',      fmt: v => v + ' min',         color: 'default' },
+    { key: 'emailAHT',     label: 'Email AHT\n(minutes)',              fmt: v => v + ' min',         color: 'yellow'  },
+    { key: 'chatAHT',      label: 'Chat AHT\n(minutes)',               fmt: v => v + ' min',         color: 'yellow'  },
+    { key: 'taskAHT',      label: 'Task AHT\n(minutes)',               fmt: v => v + ' min',         color: 'yellow'  },
+    { key: 'daysWorked',   label: 'Days Worked\n> 4 hrs',              fmt: v => v + ' days',        color: 'green'   },
+  ];
+
+  const kpiEl = document.getElementById('kpi-cards');
+  kpiEl.innerHTML = '';
+  kpiDefs.forEach(d => {
+    const val = avg[d.key] ?? 0;
+    kpiEl.innerHTML += `
+      <div class="kpi-card ${d.color}">
+        <div class="label">${d.label.replace('\n','<br>')}</div>
+        <div class="value">${d.fmt(val)}</div>
+        <div class="sub">Team average</div>
+      </div>`;
+  });
+
+  // Agent cards
+  const agentEl = document.getElementById('agent-cards');
+  agentEl.innerHTML = '';
+  agents.forEach((a, i) => {
+    const initials = a.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    const hdrColor = COLORS[i % COLORS.length];
+    const loginCls = a.loginPct >= 90 ? 'good' : a.loginPct >= 80 ? '' : 'bad';
+    const respCls  = a.avgResp >= avg.avgResp ? 'good' : 'bad';
+    agentEl.innerHTML += `
+      <div class="agent-card">
+        <div class="agent-header" style="background:${hdrColor}">
+          <div class="agent-avatar">${initials}</div>
+          <div>
+            <div class="agent-name">${a.name}</div>
+            <div class="agent-team">Follow Spy · ${a.daysWorked} days worked</div>
+          </div>
+        </div>
+        <div class="agent-stats">
+          <div class="stat-item">
+            <div class="stat-label">Total Messages + Calls</div>
+            <div class="stat-value">${a.totalMsg.toLocaleString()}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Convos Closed</div>
+            <div class="stat-value">${a.convoClosed}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Avg Responses/Day</div>
+            <div class="stat-value ${respCls}">${a.avgResp}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Avg Customers/Day</div>
+            <div class="stat-value">${a.avgCust}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">% Login Utilized</div>
+            <div class="stat-
