@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Follow Spy – Agent KPI Dashboard</title>
+  <title>RF/FS Agent KPI Dashboard</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
@@ -89,7 +89,7 @@
 
 <header>
   <div>
-    <h1>&#128202; Follow Spy &#8211; Agent KPI Dashboard</h1>
+    <h1>&#128202; RF/FS Agent KPI Dashboard</h1>
     <div class="meta" id="date-range">Loading&#8230;</div>
     <div id="last-updated"></div>
   </div>
@@ -261,6 +261,7 @@ function processAgentData(json) {
     const c = row.c || [];
     const name = c[4]?.v;
     if (!name || String(name).trim() === '') return;
+    if (name === 'Benjamin' || name.startsWith('Jessica')) return;
     const bucketDate = parseGvizDate(c[2]?.v);
     if (!bucketDate) return;
     if (bucketDate < filterStart) return;
@@ -323,9 +324,7 @@ function processSnapshot() {
   document.getElementById('last-updated').textContent = `Snapshot loaded: ${new Date().toLocaleString()}`;
   syncDateInputs(snapStart, snapEnd);
   const agents = [
-    { name:'Benjamin', totalMsg:82, daysWorked:0, avgResp:4.1, convoClosed:68, handleTime:0, avgCust:3.4, custHr:0, activeHrs:0, respHr:0, tasksCreated:15, tasksClosed:17, loginPct:99.6, hrsActive:0, awayHrs:0.1, emailAHT:0, chatAHT:0, taskAHT:0 },
     { name:'Geal Ann Lorico', totalMsg:2395, daysWorked:37, avgResp:64.7, convoClosed:678, handleTime:0, avgCust:18.3, custHr:2.7, activeHrs:250.1, respHr:9.6, tasksCreated:58, tasksClosed:46, loginPct:89.8, hrsActive:6.76, awayHrs:0.92, emailAHT:0, chatAHT:0, taskAHT:0 },
-    { name:'Jessica Ibañez', totalMsg:276, daysWorked:33, avgResp:8.4, convoClosed:266, handleTime:0, avgCust:8.1, custHr:3.5, activeHrs:76.3, respHr:3.6, tasksCreated:18, tasksClosed:4, loginPct:94.6, hrsActive:2.31, awayHrs:0.13, emailAHT:0, chatAHT:0, taskAHT:0 },
     { name:'Roynalyn Malcampo', totalMsg:2345, daysWorked:33, avgResp:71.1, convoClosed:987, handleTime:0, avgCust:29.9, custHr:4.3, activeHrs:228.7, respHr:10.3, tasksCreated:29, tasksClosed:74, loginPct:90.4, hrsActive:6.93, awayHrs:0.76, emailAHT:0, chatAHT:0, taskAHT:0 },
   ];
   renderDashboard(agents, computeAvg(agents));
