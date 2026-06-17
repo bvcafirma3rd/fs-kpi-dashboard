@@ -314,7 +314,7 @@ function processAgentData(json) {
     const c = row.c || [];
     const name = c[4]?.v;
     if (!name || String(name).trim() === '') return;
-    if (name === 'Benjamin' || name.startsWith('Jessica')) return;
+    if (name === 'Benjamin') return;
     const bucketDate = parseGvizDate(c[2]?.v);
     if (!bucketDate) return;
     if (bucketDate < filterStart) return;
