@@ -81,6 +81,12 @@
     .btn-sheet { background: #fff; color: var(--brand); border: 1px solid var(--brand); border-radius: 8px; padding: 6px 14px; font-size: .82rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: background .2s; }
     .btn-sheet:hover { background: #eff6ff; }
     .date-hint { font-size: .72rem; color: var(--muted); margin-left: 4px; }
+    .agent-filter-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 10px 32px; background: #f0f4ff; border-bottom: 1px solid var(--border); font-size: .82rem; }
+    .filter-label { font-weight: 600; color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; margin-right: 2px; }
+    .agent-chip { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px 4px 8px; border-radius: 20px; border: 1.5px solid var(--border); background: #fff; cursor: pointer; font-size: .78rem; font-weight: 500; transition: all .15s; user-select: none; }
+    .agent-chip input[type="checkbox"] { accent-color: var(--brand); width: 13px; height: 13px; cursor: pointer; }
+    .agent-chip.active { background: #eff6ff; border-color: var(--brand); color: var(--brand); }
+    .agent-chip.all-chip { font-weight: 700; }
     footer { text-align: center; padding: 24px; font-size: .75rem; color: var(--muted); border-top: 1px solid var(--border); }
     @media (max-width: 640px) { main { padding: 20px 16px; } header { padding: 16px; } .kpi-grid { grid-template-columns: repeat(2, 1fr); } .charts-grid { grid-template-columns: 1fr; } }
   </style>
@@ -104,6 +110,14 @@
   <button class="btn-apply" onclick="applyDates()">Apply &amp; Refresh</button>
   <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1bR22GOVswhKrWGG3khHQ-7gvyP6nwx8LZBFJgZlO2wQ/edit?gid=0#gid=0" target="_blank">&#9997;&#65039; Edit in Sheet</a>
   <span class="date-hint">Tip: update dates in the Sheet first, then Apply &amp; Refresh</span>
+</div>
+
+<div class="agent-filter-bar hidden" id="agent-filter-bar">
+  <span class="filter-label">&#128100; Agents</span>
+  <label class="agent-chip all-chip" id="chip-all">
+    <input type="checkbox" id="filter-all" checked onchange="toggleAllAgents(this.checked)"> All
+  </label>
+  <div id="agent-checkboxes" style="display:inline-flex;flex-wrap:wrap;gap:8px;"></div>
 </div>
 
 <div id="loading">
@@ -192,6 +206,45 @@ function syncDateInputs(startStr, endStr) {
 }
 
 let charts = {};
+let allAgents = [];
+
+function renderAgentFilter(agents) {
+  allAgents = agents;
+  const box = document.getElementById('agent-checkboxes');
+  box.innerHTML = '';
+  agents.forEach(a => {
+    const label = document.createElement('label');
+    label.className = 'agent-chip active';
+    label.innerHTML = `<input type="checkbox" value="${a.name}" checked onchange="applyAgentFilter()"> ${a.name.split(' ')[0]}`;
+    box.appendChild(label);
+  });
+  document.getElementById('filter-all').checked = true;
+  document.getElementById('chip-all').classList.add('active');
+  document.getElementById('agent-filter-bar').classList.remove('hidden');
+}
+function toggleAllAgents(checked) {
+  const cbs   = document.querySelectorAll('#agent-checkboxes input[type="checkbox"]');
+  const chips = document.querySelectorAll('#agent-checkboxes .agent-chip');
+  cbs.forEach((cb, i) => { cb.checked = checked; chips[i].classList.toggle('active', checked); });
+  document.getElementById('chip-all').classList.toggle('active', checked);
+  applyAgentFilter();
+}
+function applyAgentFilter() {
+  const chips = [...document.querySelectorAll('#agent-checkboxes .agent-chip')];
+  const checked = chips.map(chip => {
+    const cb = chip.querySelector('input');
+    chip.classList.toggle('active', cb.checked);
+    return cb.checked ? cb.value : null;
+  }).filter(Boolean);
+  const allCb   = document.getElementById('filter-all');
+  const allChip = document.getElementById('chip-all');
+  allCb.checked       = checked.length === allAgents.length;
+  allCb.indeterminate = checked.length > 0 && checked.length < allAgents.length;
+  allChip.classList.toggle('active', checked.length === allAgents.length);
+  const filtered = allAgents.filter(a => checked.includes(a.name));
+  if (filtered.length) renderDashboard(filtered, computeAvg(filtered));
+}
+
 function destroyCharts() {
   Object.values(charts).forEach(c => c && c.destroy());
   charts = {};
@@ -315,6 +368,7 @@ function processAgentData(json) {
   document.getElementById('date-range').textContent = `Follows · ${startStr} – ${endStr}`;
   document.getElementById('last-updated').textContent = `Live data · updated ${new Date().toLocaleString()}`;
   syncDateInputs(startStr, endStr);
+  renderAgentFilter(agents);
   renderDashboard(agents, computeAvg(agents));
 }
 
@@ -327,6 +381,7 @@ function processSnapshot() {
     { name:'Geal Ann Lorico', totalMsg:2395, daysWorked:37, avgResp:64.7, convoClosed:678, handleTime:0, avgCust:18.3, custHr:2.7, activeHrs:250.1, respHr:9.6, tasksCreated:58, tasksClosed:46, loginPct:89.8, hrsActive:6.76, awayHrs:0.92, emailAHT:0, chatAHT:0, taskAHT:0 },
     { name:'Roynalyn Malcampo', totalMsg:2345, daysWorked:33, avgResp:71.1, convoClosed:987, handleTime:0, avgCust:29.9, custHr:4.3, activeHrs:228.7, respHr:10.3, tasksCreated:29, tasksClosed:74, loginPct:90.4, hrsActive:6.93, awayHrs:0.76, emailAHT:0, chatAHT:0, taskAHT:0 },
   ];
+  renderAgentFilter(agents);
   renderDashboard(agents, computeAvg(agents));
 }
 
