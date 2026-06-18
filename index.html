@@ -162,8 +162,8 @@
   <div>
     <h1>RF/FS Agent KPI Dashboard</h1>
     <div class="meta">
-      <span>&#128101; Follows Team &nbsp;·&nbsp; <span id="display-range">6/1/2026 – 6/18/2026</span></span>
-      <span>&#128197; Snapshot updated <span id="display-updated">06-18-2026</span></span>
+      <span>&#128101; Follows Team &nbsp;·&nbsp; <span id="display-range"></span></span>
+      <span>&#128197; Snapshot updated <span id="display-updated"></span></span>
       <button class="edit-dates-btn" id="edit-dates-btn">&#9998; Edit dates</button>
     </div>
   </div>
@@ -243,24 +243,32 @@
 
 <script>
 // ─── Embedded snapshot data ───────────────────────────────────────────────
-let SNAPSHOT_DATE = '6/1/2026 – 6/18/2026';
-let UPDATED_AT    = '06-18-2026';
+var DEFAULT_START = '2026-06-01';
+var DEFAULT_END   = '2026-06-18';
+
+function fmtDate(iso) {
+  var d = new Date(iso + 'T00:00:00');
+  return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
+}
+
+// Read dates from URL params, fall back to defaults
+function getDatesFromURL() {
+  var params = new URLSearchParams(window.location.search);
+  var s = params.get('start') || DEFAULT_START;
+  var e = params.get('end')   || DEFAULT_END;
+  return { start: s, end: e };
+}
+
+var _dates = getDatesFromURL();
+var SNAPSHOT_DATE = fmtDate(_dates.start) + ' – ' + fmtDate(_dates.end);
+var UPDATED_AT    = _dates.end;
 
 // ─── Date modal ────────────────────────────────────────────────────────────
 function openDateModal() {
-  var overlay = document.getElementById('date-modal-overlay');
-  // Pre-fill inputs from current values
-  var parts = SNAPSHOT_DATE.split(' – ');
-  if (parts.length === 2) {
-    var toInputDate = function(s) {
-      var d = new Date(s);
-      if (isNaN(d)) return '';
-      return d.toISOString().slice(0, 10);
-    };
-    document.getElementById('modal-start').value = toInputDate(parts[0]);
-    document.getElementById('modal-end').value   = toInputDate(parts[1]);
-  }
-  overlay.classList.add('open');
+  var d = getDatesFromURL();
+  document.getElementById('modal-start').value = d.start;
+  document.getElementById('modal-end').value   = d.end;
+  document.getElementById('date-modal-overlay').classList.add('open');
 }
 
 function closeDateModal() {
@@ -271,20 +279,16 @@ function applyDates() {
   var startVal = document.getElementById('modal-start').value;
   var endVal   = document.getElementById('modal-end').value;
   if (!startVal || !endVal) { alert('Please select both dates.'); return; }
-  var fmt = function(iso) {
-    var d = new Date(iso + 'T00:00:00');
-    return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
-  };
-  SNAPSHOT_DATE = fmt(startVal) + ' – ' + fmt(endVal);
-  UPDATED_AT    = endVal.replace(/-/g, '-').split('-').join('-');
-  document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
-  document.getElementById('display-updated').textContent = endVal.slice(5).replace('-','/') + '/' + endVal.slice(0,4);
-  closeDateModal();
-  render(); // refresh KPI card subtitles
+  // Reload page with dates in URL — guarantees a clean re-render
+  window.location.href = window.location.pathname + '?start=' + startVal + '&end=' + endVal;
 }
 
 // Wire up all event listeners (no inline onclick/onchange — blocked by CSP on GitHub Pages)
 document.addEventListener('DOMContentLoaded', function() {
+  // Apply dates from URL params to display elements
+  document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
+  document.getElementById('display-updated').textContent = fmtDate(UPDATED_AT);
+
   document.getElementById('edit-dates-btn').addEventListener('click', openDateModal);
   document.getElementById('btn-cancel').addEventListener('click', closeDateModal);
   document.getElementById('btn-apply').addEventListener('click', applyDates);
