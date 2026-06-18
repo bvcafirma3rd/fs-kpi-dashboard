@@ -119,7 +119,7 @@
     <table>
       <thead><tr>
         <th>Agent</th><th>QA Score</th><th>FCR %</th><th>Avg Cx / Day</th>
-        <th>Handle Time / Cx</th><th>Chat AHT</th><th>Missed (No Reply)</th>
+        <th>AHT (mm:ss)</th><th>Chat AHT</th><th>Missed (No Reply)</th>
         <th>Avg Login</th><th>Login Utilized</th><th>Productivity</th><th>By Response</th>
       </tr></thead>
       <tbody id="table-body"></tbody>
@@ -216,7 +216,7 @@ function renderKpi() {
     {label:'Avg Cx / Day',     val:Math.round(avgCx).toString(),  cls:''},
     {label:'Avg Login',        val:TEAM.avgLogin,                cls:''},
     {label:'Login Utilized',   val:TEAM.loginUtil+'%',           cls:TEAM.loginUtil>=90?'good':'warn'},
-    {label:'Handle Time / Cx', val:TEAM.htCx,                    cls:'warn'},
+    {label:'AHT (mm:ss)', val:TEAM.htCx,                    cls:'warn'},
     {label:'Chat AHT',         val:TEAM.chatAHT,                 cls:''},
     {label:'Missed (No Reply)',val:totNR+' total',                cls:''},
     {label:'By Response',      val:totBR.toLocaleString(),       cls:''},
@@ -264,7 +264,7 @@ function renderCards() {
     var qaC=a.qa===null?'':a.qa>=95?'good':a.qa>=90?'warn':'bad';
     var fcrC=a.fcr>=50?'good':a.fcr>=40?'':'bad';
     var luC=a.loginUtil===null?'':a.loginUtil>=90?'good':a.loginUtil>=80?'':'bad';
-    return '<div class="agent-card"><div class="agent-header" style="background:'+col+'"><div class="agent-avatar">'+ini+'</div><div><div class="agent-name">'+a.name+'</div><div class="agent-sub">Follows &bull; '+a.days+' days worked</div></div></div><div class="agent-stats">'+stat('QA Score',a.qa!==null?a.qa+'%':'N/A',qaC)+stat('FCR %',a.fcr+'%',fcrC)+stat('Avg Cx / Day',a.cxPerDay,'')+stat('Handle Time / Cx',a.htCx,'')+stat('Chat AHT',a.chatAHT,'')+stat('Missed (No Reply)',a.noReply,'')+stat('Avg Login',a.avgLogin||'N/A','')+stat('Login Utilized',a.loginUtil!==null?a.loginUtil+'%':'N/A',luC)+stat('Productivity',a.productivity!==null?a.productivity+'%':'—','')+stat('By Response',a.byResponse,'')+'</div></div>';
+    return '<div class="agent-card"><div class="agent-header" style="background:'+col+'"><div class="agent-avatar">'+ini+'</div><div><div class="agent-name">'+a.name+'</div><div class="agent-sub">Follows &bull; '+a.days+' days worked</div></div></div><div class="agent-stats">'+stat('QA Score',a.qa!==null?a.qa+'%':'N/A',qaC)+stat('FCR %',a.fcr+'%',fcrC)+stat('Avg Cx / Day',a.cxPerDay,'')+stat('AHT (mm:ss)',a.htCx,'')+stat('Chat AHT',a.chatAHT,'')+stat('Missed (No Reply)',a.noReply,'')+stat('Avg Login',a.avgLogin||'N/A','')+stat('Login Utilized',a.loginUtil!==null?a.loginUtil+'%':'N/A',luC)+stat('Productivity',a.productivity!==null?a.productivity+'%':'—','')+stat('By Response',a.byResponse,'')+'</div></div>';
   }).join('');
 }
 
