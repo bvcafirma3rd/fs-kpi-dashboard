@@ -162,7 +162,7 @@
   <div>
     <h1>Support Team KPI Dashboard</h1>
     <div class="meta">
-      <span>&#128101; Support Team &nbsp;·&nbsp; <span id="display-range"></span></span>
+      <span>&#128101; Follows Team &nbsp;·&nbsp; <span id="display-range"></span></span>
       <span>&#128197; Snapshot updated <span id="display-updated"></span></span>
       <button class="edit-dates-btn" id="edit-dates-btn">&#9998; Edit dates</button>
     </div>
@@ -258,20 +258,18 @@ var DATASETS = {
   may: {
     startISO: '2026-05-01', endISO: '2026-05-31',
     agents: [
-      { name: 'Jasmine Alcantara',        days: 22, respPerDay: 79.6, convs: 1854, ahtMin: 4, cxPerDay: 84.3, cxPerHr: 11, loginUtil: 89.22, loginHrs: 7.75, awayHrs: 20.58, chatMin: 6   },
-      { name: 'Rachelle Evita dela Cruz', days: 19, respPerDay: 49.6, convs: 1261, ahtMin: 4, cxPerDay: 66.4, cxPerHr: 9,  loginUtil: 95.60, loginHrs: 7.73, awayHrs: 6.76,  chatMin: 3   },
-      { name: 'Vivian Ordonez',           days: 19, respPerDay: 45.7, convs: 1069, ahtMin: 3, cxPerDay: 56.3, cxPerHr: 9,  loginUtil: 85.18, loginHrs: 6.56, awayHrs: 21.68, chatMin: 1   },
+      { name: 'Geal Ann Lorico',   days: 23, respPerDay: 137.7, convs: 755, ahtMin: 7, cxPerDay: 32.8, cxPerHr: 4, loginUtil: 89.71, loginHrs: 7.31, awayHrs: 19.28, chatMin: 61  },
+      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 133.6, convs: 894, ahtMin: 8, cxPerDay: 44.7, cxPerHr: 6, loginUtil: 90.52, loginHrs: 7.48, awayHrs: 15.67, chatMin: 69  },
     ],
-    team: { respPerDay: 58, convs: 1395, ahtMin: 4, cxPerDay: 69, loginUtil: 90.00, loginHrs: 7.34, chatMin: 3.20 }
+    team: { respPerDay: 136, convs: 825, ahtMin: 7, cxPerDay: 39, loginUtil: 90.12, loginHrs: 7.40, chatMin: 65.14 }
   },
   june: {
     startISO: '2026-06-01', endISO: '2026-06-17',
     agents: [
-      { name: 'Jasmine Alcantara',        days: 9,  respPerDay: 83.8, convs: 763, ahtMin: 4, cxPerDay: 84.8, cxPerHr: 10, loginUtil: 94.91, loginHrs: 8.21, awayHrs: 3.96,  chatMin: 10  },
-      { name: 'Rachelle Evita dela Cruz', days: 10, respPerDay: 40.8, convs: 578, ahtMin: 4, cxPerDay: 57.8, cxPerHr: 7,  loginUtil: 92.11, loginHrs: 7.88, awayHrs: 6.75,  chatMin: 5   },
-      { name: 'Vivian Ordonez',           days: 8,  respPerDay: 43.3, convs: 432, ahtMin: 3, cxPerDay: 54.0, cxPerHr: 7,  loginUtil: 84.07, loginHrs: 7.24, awayHrs: 10.98, chatMin: 4   },
+      { name: 'Geal Ann Lorico',   days: 10, respPerDay: 61.1, convs: 209, ahtMin: 7, cxPerDay: 20.9, cxPerHr: 3, loginUtil: 89.05, loginHrs: 7.16, awayHrs: 8.80,  chatMin: 31  },
+      { name: 'Roynalyn Malcampo', days: 10, respPerDay: 99.5, convs: 332, ahtMin: 7, cxPerDay: 33.2, cxPerHr: 4, loginUtil: 90.83, loginHrs: 7.42, awayHrs: 7.49,  chatMin: 61  },
     ],
-    team: { respPerDay: 56, convs: 591, ahtMin: 4, cxPerDay: 66, loginUtil: 90.36, loginHrs: 7.78, chatMin: 6.18 }
+    team: { respPerDay: 80, convs: 271, ahtMin: 7, cxPerDay: 27, loginUtil: 89.94, loginHrs: 7.29, chatMin: 45.92 }
   }
 };
 
@@ -497,7 +495,7 @@ function renderCards() {
       + '<div class="agent-header" style="background:' + color + '">'
       + '<div class="agent-avatar">' + initials + '</div>'
       + '<div><div class="agent-name">' + a.name + '</div>'
-      + '<div class="agent-sub">Support Team • ' + a.days + ' days worked</div></div>'
+      + '<div class="agent-sub">Follows Team • ' + a.days + ' days worked</div></div>'
       + '</div>'
       + '<div class="agent-stats">'
       + stat('Avg Cx / Day',   a.cxPerDay, '')
