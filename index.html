@@ -35,35 +35,14 @@
       background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
       border-radius: 20px; padding: 3px 10px; font-size: .72rem; font-weight: 500;
     }
-    .edit-dates-btn {
-      background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4);
-      border-radius: 6px; color: #fff; cursor: pointer; font-size: .72rem;
-      padding: 2px 8px; margin-left: 8px; transition: background .15s;
+    .month-tabs { display: flex; gap: 4px; }
+    .month-tab {
+      background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.35);
+      border-radius: 20px; color: #fff; cursor: pointer; font-size: .78rem;
+      font-weight: 500; padding: 5px 14px; transition: all .15s;
     }
-    .edit-dates-btn:hover { background: rgba(255,255,255,.35); }
-    .date-modal-overlay {
-      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
-      z-index: 100; align-items: center; justify-content: center;
-    }
-    .date-modal-overlay.open { display: flex; }
-    .date-modal {
-      background: #fff; border-radius: 12px; padding: 24px 28px;
-      box-shadow: 0 8px 40px rgba(0,0,0,.2); min-width: 320px;
-      color: var(--text);
-    }
-    .date-modal h2 { font-size: 1rem; margin-bottom: 16px; }
-    .date-modal label { font-size: .78rem; color: var(--muted); display: block; margin-bottom: 4px; }
-    .date-modal input[type=date] {
-      width: 100%; padding: 7px 10px; border: 1px solid var(--border);
-      border-radius: 7px; font-size: .88rem; margin-bottom: 12px;
-    }
-    .date-modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
-    .date-modal-btns button {
-      padding: 7px 16px; border-radius: 7px; font-size: .84rem;
-      cursor: pointer; font-weight: 500; border: none;
-    }
-    .btn-cancel { background: #f3f4f6; color: var(--text); }
-    .btn-apply  { background: var(--brand); color: #fff; }
+    .month-tab:hover { background: rgba(255,255,255,.28); }
+    .month-tab.active { background: rgba(255,255,255,.92); color: var(--brand-dk); font-weight: 700; border-color: transparent; }
 
     .agent-filter-bar {
       display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
@@ -164,24 +143,14 @@
     <div class="meta">
       <span>&#128101; Follows Team &nbsp;·&nbsp; <span id="display-range"></span></span>
       <span>&#128197; Snapshot updated <span id="display-updated"></span></span>
-      <button class="edit-dates-btn" id="edit-dates-btn">&#9998; Edit dates</button>
     </div>
   </div>
-  <span class="snapshot-badge">&#128248; Static snapshot &bull; Refreshes every Tuesday 9 AM PST</span>
-</div>
-
-<!-- Date edit modal -->
-<div class="date-modal-overlay" id="date-modal-overlay">
-  <div class="date-modal">
-    <h2>&#128197; Update Date Range</h2>
-    <label>Start date</label>
-    <input type="date" id="modal-start" />
-    <label>End date</label>
-    <input type="date" id="modal-end" />
-    <div class="date-modal-btns">
-      <button class="btn-cancel" id="btn-cancel">Cancel</button>
-      <button class="btn-apply" id="btn-apply">Apply</button>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+    <div class="month-tabs">
+      <button class="month-tab" id="tab-may"  data-month="may">May 2026</button>
+      <button class="month-tab" id="tab-june" data-month="june">June 2026</button>
     </div>
+    <span class="snapshot-badge">&#128248; Static snapshot</span>
   </div>
 </div>
 
@@ -237,7 +206,7 @@
 </div>
 
 <div class="footer">
-  Support Team KPI Dashboard &bull; Data from Adly &ndash; Gladly Agent Reporting (private) &bull; Switch periods via Edit Dates &bull; May &amp; June 2026
+  Support Team KPI Dashboard &bull; Data from Adly &ndash; Gladly Agent Reporting (private) &bull; May &amp; June 2026
 </div>
 
 <script>
@@ -283,12 +252,15 @@ function fmtDate(iso) {
 
 function getDatesFromURL() {
   var params = new URLSearchParams(window.location.search);
-  var s = params.get('start');
-  // If start param is in May range → use May dataset; otherwise June
-  if (s && s <= '2026-05-31') {
+  var m = params.get('month');
+  if (m === 'may') {
     return { start: DATASETS.may.startISO, end: DATASETS.may.endISO, key: 'may' };
   }
   return { start: DATASETS.june.startISO, end: DATASETS.june.endISO, key: 'june' };
+}
+
+function switchMonth(key) {
+  window.location.href = window.location.pathname + '?month=' + key;
 }
 
 var _dates        = getDatesFromURL();
@@ -298,32 +270,19 @@ var TEAM          = DATASET.team;
 var SNAPSHOT_DATE = fmtDate(_dates.start) + ' – ' + fmtDate(_dates.end);
 var UPDATED_AT    = _dates.end;
 
-// ─── Date modal ────────────────────────────────────────────────────────────
-function openDateModal() {
-  document.getElementById('modal-start').value = _dates.start;
-  document.getElementById('modal-end').value   = _dates.end;
-  document.getElementById('date-modal-overlay').classList.add('open');
-}
-function closeDateModal() {
-  document.getElementById('date-modal-overlay').classList.remove('open');
-}
-function applyDates() {
-  var startVal = document.getElementById('modal-start').value;
-  var endVal   = document.getElementById('modal-end').value;
-  if (!startVal || !endVal) { alert('Please select both dates.'); return; }
-  window.location.href = window.location.pathname + '?start=' + startVal + '&end=' + endVal;
-}
-
 // Wire up all event listeners (no inline onclick/onchange — blocked by CSP on GitHub Pages)
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
   document.getElementById('display-updated').textContent = fmtDate(UPDATED_AT);
-  document.getElementById('edit-dates-btn').addEventListener('click', openDateModal);
-  document.getElementById('btn-cancel').addEventListener('click', closeDateModal);
-  document.getElementById('btn-apply').addEventListener('click', applyDates);
-  document.getElementById('date-modal-overlay').addEventListener('click', function(e) {
-    if (e.target === this) closeDateModal();
+
+  // Highlight active month tab
+  document.getElementById('tab-' + _dates.key).classList.add('active');
+
+  // Wire month tab buttons
+  document.querySelectorAll('.month-tab').forEach(function(btn) {
+    btn.addEventListener('click', function() { switchMonth(this.dataset.month); });
   });
+
   document.getElementById('filter-all').addEventListener('change', function() {
     toggleAll(this.checked);
   });
