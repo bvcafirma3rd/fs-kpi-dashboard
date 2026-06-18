@@ -21,21 +21,44 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: .92rem; }
-
     .top-bar {
       background: linear-gradient(135deg, var(--brand-dk) 0%, var(--brand) 100%);
       color: #fff; padding: 18px 32px;
       display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
     }
     .top-bar h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; }
-    .top-bar .meta { font-size: .78rem; opacity: .85; display: flex; gap: 16px; flex-wrap: wrap; }
+    .top-bar .meta { font-size: .78rem; opacity: .85; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     .top-bar .meta span { display: flex; align-items: center; gap: 4px; }
     .snapshot-badge {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
       border-radius: 20px; padding: 3px 10px; font-size: .72rem; font-weight: 500;
     }
-
+    .edit-dates-btn {
+      background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.4);
+      border-radius: 6px; color: #fff; cursor: pointer; font-size: .72rem;
+      padding: 2px 8px; margin-left: 4px; transition: background .15s;
+    }
+    .edit-dates-btn:hover { background: rgba(255,255,255,.35); }
+    .date-modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      z-index: 100; align-items: center; justify-content: center;
+    }
+    .date-modal-overlay.open { display: flex; }
+    .date-modal {
+      background: #fff; border-radius: 12px; padding: 24px 28px;
+      box-shadow: 0 8px 40px rgba(0,0,0,.2); min-width: 320px; color: var(--text);
+    }
+    .date-modal h2 { font-size: 1rem; margin-bottom: 16px; }
+    .date-modal label { font-size: .78rem; color: var(--muted); display: block; margin-bottom: 4px; }
+    .date-modal input[type=date] {
+      width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+      border-radius: 7px; font-size: .88rem; margin-bottom: 12px;
+    }
+    .date-modal-btns { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+    .date-modal-btns button { padding: 7px 16px; border-radius: 7px; font-size: .84rem; cursor: pointer; font-weight: 500; border: none; }
+    .btn-cancel { background: #f3f4f6; color: var(--text); }
+    .btn-apply  { background: var(--brand); color: #fff; }
     .agent-filter-bar {
       display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
       padding: 10px 32px; background: #f0f4ff; border-bottom: 1px solid var(--border);
@@ -49,68 +72,36 @@
     }
     .agent-chip input { cursor: pointer; accent-color: var(--brand); }
     .agent-chip.active { background: #eff6ff; border-color: var(--brand); color: var(--brand); }
-
     .section { padding: 20px 32px; }
-    .section-title {
-      font-size: .78rem; font-weight: 700; text-transform: uppercase;
-      letter-spacing: .06em; color: var(--muted); margin-bottom: 14px;
-    }
-
+    .section-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 14px; }
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-    .kpi-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 14px 16px;
-      display: flex; flex-direction: column; gap: 4px;
-    }
+    .kpi-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 14px 16px; display: flex; flex-direction: column; gap: 4px; }
     .kpi-card .label { font-size: .72rem; color: var(--muted); font-weight: 500; line-height: 1.3; }
     .kpi-card .value { font-size: 1.3rem; font-weight: 700; color: var(--text); }
     .kpi-card .sub { font-size: .68rem; color: var(--muted); }
-    .kpi-card.good  .value { color: var(--green); }
-    .kpi-card.warn  .value { color: var(--yellow); }
-    .kpi-card.bad   .value { color: var(--red); }
-
+    .kpi-card.good .value { color: var(--green); }
+    .kpi-card.warn .value { color: var(--yellow); }
+    .kpi-card.bad  .value { color: var(--red); }
     .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
-    .chart-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); padding: 16px 18px;
-    }
-    .chart-card h3 {
-      font-size: .75rem; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px;
-    }
+    .chart-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px 18px; }
+    .chart-card h3 { font-size: .75rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 12px; }
     .chart-card canvas { max-height: 180px; }
-
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-    thead th {
-      background: #f9fafb; border-bottom: 2px solid var(--border);
-      padding: 8px 12px; text-align: left; font-size: .70rem;
-      font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
-      white-space: nowrap;
-    }
+    thead th { background: #f9fafb; border-bottom: 2px solid var(--border); padding: 8px 12px; text-align: left; font-size: .70rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
     tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
     tbody tr:hover { background: #f9fafb; }
     tbody td { padding: 10px 12px; white-space: nowrap; }
     tbody td:first-child { font-weight: 600; }
-    .tag-good   { color: var(--green); font-weight: 600; }
-    .tag-warn   { color: var(--yellow); font-weight: 600; }
-    .tag-bad    { color: var(--red);   font-weight: 600; }
-    .tag-na     { color: var(--muted); font-style: italic; }
+    .tag-good { color: var(--green); font-weight: 600; }
+    .tag-warn { color: var(--yellow); font-weight: 600; }
+    .tag-bad  { color: var(--red);   font-weight: 600; }
+    .tag-na   { color: var(--muted); font-style: italic; }
     .avg-row td { background: #f0f4ff; font-weight: 600; }
-
     .agent-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-    .agent-card {
-      background: var(--surface); border-radius: var(--radius);
-      border: 1px solid var(--border); overflow: hidden;
-    }
-    .agent-header {
-      padding: 14px 16px; display: flex; align-items: center; gap: 12px; color: #fff;
-    }
-    .agent-avatar {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: rgba(255,255,255,.25); display: flex; align-items: center;
-      justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0;
-    }
+    .agent-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+    .agent-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; color: #fff; }
+    .agent-avatar { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.25); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; flex-shrink: 0; }
     .agent-name { font-weight: 700; font-size: .95rem; }
     .agent-sub  { font-size: .72rem; opacity: .85; }
     .agent-stats { padding: 12px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -119,11 +110,7 @@
     .stat-item .stat-value.good { color: var(--green); }
     .stat-item .stat-value.bad  { color: var(--red); }
     .stat-item .stat-value.warn { color: var(--yellow); }
-
-    .footer {
-      text-align: center; padding: 16px 32px; font-size: .72rem; color: var(--muted);
-      border-top: 1px solid var(--border); background: var(--surface);
-    }
+    .footer { text-align: center; padding: 16px 32px; font-size: .72rem; color: var(--muted); border-top: 1px solid var(--border); background: var(--surface); }
     .divider { height: 1px; background: var(--border); margin: 0 32px; }
   </style>
 </head>
@@ -133,11 +120,26 @@
   <div>
     <h1>RF/FS Agent KPI Dashboard</h1>
     <div class="meta">
-      <span>&#128101; Follows Team &nbsp;&middot;&nbsp; 6/1/2026 &ndash; 6/18/2026</span>
-      <span>&#128197; Snapshot updated 06-18-2026</span>
+      <span>&#128101; Follows Team &nbsp;&middot;&nbsp; <span id="display-range">6/1/2026 – 6/18/2026</span></span>
+      <span>&#128197; Snapshot updated <span id="display-updated">06-18-2026</span></span>
+      <button class="edit-dates-btn" onclick="openDateModal()">&#9998; Edit dates</button>
     </div>
   </div>
-  <span class="snapshot-badge">&#128248; Static snapshot &bull; Refreshes every Tuesday 6 AM PST</span>
+  <span class="snapshot-badge">&#128248; Static snapshot &bull; Refreshes every Tuesday 9 AM PST</span>
+</div>
+
+<div class="date-modal-overlay" id="date-modal-overlay">
+  <div class="date-modal">
+    <h2>&#128197; Update Date Range</h2>
+    <label>Start date</label>
+    <input type="date" id="modal-start" />
+    <label>End date</label>
+    <input type="date" id="modal-end" />
+    <div class="date-modal-btns">
+      <button class="btn-cancel" onclick="closeDateModal()">Cancel</button>
+      <button class="btn-apply" onclick="applyDates()">Apply</button>
+    </div>
+  </div>
 </div>
 
 <div class="agent-filter-bar">
@@ -152,256 +154,214 @@
   <div class="section-title">Team Summary</div>
   <div class="kpi-grid" id="kpi-grid"></div>
 </div>
-
 <div class="divider"></div>
-
 <div class="section">
   <div class="section-title">Agent Comparison Charts</div>
   <div class="charts-grid" id="charts-grid"></div>
 </div>
-
 <div class="divider"></div>
-
 <div class="section">
   <div class="section-title">Full Metrics Table</div>
   <div class="table-wrap">
     <table>
-      <thead>
-        <tr>
-          <th>Agent</th>
-          <th>QA Score</th>
-          <th>FCR %</th>
-          <th>Avg Cx / Day</th>
-          <th>Handle Time / Cx</th>
-          <th>Chat AHT</th>
-          <th>Missed (No Reply)</th>
-          <th>Avg Login</th>
-          <th>Login Utilized</th>
-          <th>Productivity</th>
-          <th>By Response</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th>Agent</th><th>QA Score</th><th>FCR %</th><th>Avg Cx / Day</th>
+        <th>Handle Time / Cx</th><th>Chat AHT</th><th>Missed (No Reply)</th>
+        <th>Avg Login</th><th>Login Utilized</th><th>Productivity</th><th>By Response</th>
+      </tr></thead>
       <tbody id="table-body"></tbody>
     </table>
   </div>
 </div>
-
 <div class="divider"></div>
-
 <div class="section">
   <div class="section-title">Agent Cards</div>
   <div class="agent-cards-grid" id="agent-cards-grid"></div>
 </div>
-
 <div class="footer">
-  RF/FS Agent KPI Dashboard &bull; Follows Team &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; Refreshes every Tuesday 6 AM PST
+  RF/FS Agent KPI Dashboard &bull; Follows Team &bull; Data from Support Team – Agent Reporting (private) &bull; Refreshes every Tuesday 9 AM PST
 </div>
 
 <script>
-const SNAPSHOT_DATE = '6/1/2026 – 6/18/2026';
-const UPDATED_AT    = '06-18-2026';
+let SNAPSHOT_DATE = '6/1/2026 – 6/18/2026';
+let UPDATED_AT    = '06-18-2026';
+
+function openDateModal() {
+  var parts = SNAPSHOT_DATE.split(' – ');
+  if (parts.length === 2) {
+    var toISO = function(s) { var d = new Date(s); return isNaN(d) ? '' : d.toISOString().slice(0,10); };
+    document.getElementById('modal-start').value = toISO(parts[0]);
+    document.getElementById('modal-end').value   = toISO(parts[1]);
+  }
+  document.getElementById('date-modal-overlay').classList.add('open');
+}
+function closeDateModal() {
+  document.getElementById('date-modal-overlay').classList.remove('open');
+}
+function applyDates() {
+  var s = document.getElementById('modal-start').value;
+  var e = document.getElementById('modal-end').value;
+  if (!s || !e) { alert('Please select both dates.'); return; }
+  var fmt = function(iso) { var d = new Date(iso + 'T00:00:00'); return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear(); };
+  SNAPSHOT_DATE = fmt(s) + ' – ' + fmt(e);
+  document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
+  document.getElementById('display-updated').textContent = e.slice(5).replace('-','/') + '/' + e.slice(0,4);
+  closeDateModal();
+  render();
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('date-modal-overlay').addEventListener('click', function(ev) { if (ev.target === this) closeDateModal(); });
+});
 
 const AGENTS = [
-  {
-    name:        'Geal Ann Lorico',
-    qa:          97.96,
-    fcr:         38.70,
-    cxPerDay:    20,
-    htCx:        '06:28',
-    chatAHT:     '03:07',
-    noReply:     19,
-    avgLogin:    '8:02',
-    loginUtil:   89,
-    productivity: null,
-    byResponse:  184,
-    days:        10.1,
-    total:       203,
-  },
-  {
-    name:        'Jessica Ibañez',
-    qa:          null,
-    fcr:         56.11,
-    cxPerDay:    24,
-    htCx:        '09:16',
-    chatAHT:     '00:00',
-    noReply:     9,
-    avgLogin:    null,
-    loginUtil:   null,
-    productivity: null,
-    byResponse:  55,
-    days:        2.7,
-    total:       64,
-  },
-  {
-    name:        'Roynalyn Malcampo',
-    qa:          95.14,
-    fcr:         46.29,
-    cxPerDay:    31,
-    htCx:        '06:30',
-    chatAHT:     '05:06',
-    noReply:     53,
-    avgLogin:    '8:09',
-    loginUtil:   91,
-    productivity: null,
-    byResponse:  296,
-    days:        11.2,
-    total:       349,
-  },
+  { name: 'Geal Ann Lorico',   qa: 97.96, fcr: 38.70, cxPerDay: 20, htCx: '06:28', chatAHT: '03:07', noReply: 19, avgLogin: '8:02', loginUtil: 89,   productivity: null, byResponse: 184, days: 10.1, total: 203 },
+  { name: 'Jessica Ibañez', qa: null,  fcr: 56.11, cxPerDay: 24, htCx: '09:16', chatAHT: '00:00', noReply: 9,  avgLogin: null,   loginUtil: null, productivity: null, byResponse: 55,  days: 2.7,  total: 64  },
+  { name: 'Roynalyn Malcampo', qa: 95.14, fcr: 46.29, cxPerDay: 31, htCx: '06:30', chatAHT: '05:06', noReply: 53, avgLogin: '8:09', loginUtil: 91,   productivity: null, byResponse: 296, days: 11.2, total: 349 },
 ];
-
-const TEAM = {
-  qa: 96.55, fcr: 47.03, cxPerDay: 25,
-  htCx: '07:25', chatAHT: '02:44',
-  avgLogin: '8:06', loginUtil: 89.95,
-};
-
-const COLORS = ['#1a56db', '#057a55', '#7c3aed'];
-
+const TEAM   = { qa: 96.55, fcr: 47.03, cxPerDay: 25, htCx: '07:25', chatAHT: '02:44', avgLogin: '8:06', loginUtil: 89.95 };
+const COLORS = ['#1a56db','#057a55','#7c3aed'];
 let active = AGENTS.map(a => a.name);
 let charts = [];
 
 function initFilter() {
-  const box = document.getElementById('agent-chips');
+  var box = document.getElementById('agent-chips');
   box.innerHTML = '';
-  AGENTS.forEach(a => {
-    const lbl = document.createElement('label');
+  AGENTS.forEach(function(a) {
+    var lbl = document.createElement('label');
     lbl.className = 'agent-chip active';
-    lbl.dataset.name = a.name;
     lbl.innerHTML = '<input type="checkbox" value="' + a.name + '" checked onchange="applyFilter()"> ' + a.name.split(' ')[0];
     box.appendChild(lbl);
   });
 }
-
 function toggleAll(checked) {
-  document.querySelectorAll('#agent-chips input').forEach(cb => cb.checked = checked);
-  document.querySelectorAll('#agent-chips label, #chip-all').forEach(l => l.classList.toggle('active', checked));
-  active = checked ? AGENTS.map(a => a.name) : [];
+  document.querySelectorAll('#agent-chips input').forEach(function(cb) { cb.checked = checked; });
+  document.querySelectorAll('#agent-chips label, #chip-all').forEach(function(l) { l.classList.toggle('active', checked); });
+  active = checked ? AGENTS.map(function(a) { return a.name; }) : [];
   render();
 }
-
 function applyFilter() {
-  active = [...document.querySelectorAll('#agent-chips input:checked')].map(cb => cb.value);
-  document.querySelectorAll('#agent-chips label').forEach(l => {
-    l.classList.toggle('active', l.querySelector('input').checked);
-  });
+  active = Array.from(document.querySelectorAll('#agent-chips input:checked')).map(function(cb) { return cb.value; });
+  document.querySelectorAll('#agent-chips label').forEach(function(l) { l.classList.toggle('active', l.querySelector('input').checked); });
   var all = active.length === AGENTS.length;
   document.getElementById('filter-all').checked = all;
   document.getElementById('chip-all').classList.toggle('active', all);
   render();
 }
-
-function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
+function getActive() { return AGENTS.filter(function(a) { return active.indexOf(a.name) > -1; }); }
 
 function tagged(v, good, warn, suffix) {
   if (v === null || v === undefined) return '<span class="tag-na">N/A</span>';
   var cls = v >= good ? 'tag-good' : v >= warn ? 'tag-warn' : 'tag-bad';
-  return '<span class="' + cls + '">' + v + (suffix || '') + '</span>';
+  return '<span class="' + cls + '">' + v + (suffix||'') + '</span>';
 }
 
 function renderKpi() {
   var el = document.getElementById('kpi-grid');
   var list = getActive();
   if (!list.length) { el.innerHTML = '<p style="color:var(--muted)">No agents selected.</p>'; return; }
-  var qaList = list.filter(a => a.qa !== null);
-  var avgQA  = qaList.length ? qaList.reduce((s,a) => s + a.qa, 0) / qaList.length : 0;
-  var avgFCR = list.reduce((s,a) => s + a.fcr, 0) / list.length;
-  var avgCx  = list.reduce((s,a) => s + a.cxPerDay, 0) / list.length;
-  var totNoReply = list.reduce((s,a) => s + a.noReply, 0);
-  var totByResp  = list.reduce((s,a) => s + a.byResponse, 0);
+  var qaList = list.filter(function(a) { return a.qa !== null; });
+  var avgQA  = qaList.length ? qaList.reduce(function(s,a){return s+a.qa;},0)/qaList.length : 0;
+  var avgFCR = list.reduce(function(s,a){return s+a.fcr;},0)/list.length;
+  var avgCx  = list.reduce(function(s,a){return s+a.cxPerDay;},0)/list.length;
+  var totNR  = list.reduce(function(s,a){return s+a.noReply;},0);
+  var totBR  = list.reduce(function(s,a){return s+a.byResponse;},0);
   var cards = [
-    { label: 'QA Score',         val: avgQA.toFixed(1) + '%',      cls: avgQA >= 95 ? 'good' : avgQA >= 90 ? 'warn' : 'bad' },
-    { label: 'FCR %',            val: avgFCR.toFixed(1) + '%',     cls: avgFCR >= 50 ? 'good' : 'warn' },
-    { label: 'Avg Cx / Day',     val: Math.round(avgCx).toString(), cls: '' },
-    { label: 'Avg Login',        val: TEAM.avgLogin,               cls: '' },
-    { label: 'Login Utilized',   val: TEAM.loginUtil + '%',        cls: TEAM.loginUtil >= 90 ? 'good' : 'warn' },
-    { label: 'Handle Time / Cx', val: TEAM.htCx,                   cls: 'warn' },
-    { label: 'Chat AHT',         val: TEAM.chatAHT,                cls: '' },
-    { label: 'Missed (No Reply)',val: totNoReply + ' total',        cls: '' },
-    { label: 'By Response',      val: totByResp.toLocaleString(),  cls: '' },
-    { label: 'Productivity',     val: '—',                    cls: '' },
+    { label:'QA Score',         val:avgQA.toFixed(1)+'%',          cls:avgQA>=95?'good':avgQA>=90?'warn':'bad' },
+    { label:'FCR %',            val:avgFCR.toFixed(1)+'%',         cls:avgFCR>=50?'good':'warn' },
+    { label:'Avg Cx / Day',     val:Math.round(avgCx).toString(),   cls:'' },
+    { label:'Avg Login',        val:TEAM.avgLogin,                 cls:'' },
+    { label:'Login Utilized',   val:TEAM.loginUtil+'%',            cls:TEAM.loginUtil>=90?'good':'warn' },
+    { label:'Handle Time / Cx', val:TEAM.htCx,                     cls:'warn' },
+    { label:'Chat AHT',         val:TEAM.chatAHT,                  cls:'' },
+    { label:'Missed (No Reply)',val:totNR+' total',                 cls:'' },
+    { label:'By Response',      val:totBR.toLocaleString(),        cls:'' },
+    { label:'Productivity',     val:'—',                      cls:'' },
   ];
-  el.innerHTML = cards.map(function(c) {
-    return '<div class="kpi-card ' + c.cls + '"><div class="label">' + c.label + '</div><div class="value">' + c.val + '</div><div class="sub">Team avg · ' + SNAPSHOT_DATE + '</div></div>';
+  el.innerHTML = cards.map(function(c){
+    return '<div class="kpi-card '+c.cls+'"><div class="label">'+c.label+'</div><div class="value">'+c.val+'</div><div class="sub">Team avg · '+SNAPSHOT_DATE+'</div></div>';
   }).join('');
 }
 
 function renderCharts() {
-  charts.forEach(function(c) { c.destroy(); });
+  charts.forEach(function(c){c.destroy();});
   charts = [];
   var list = getActive();
   var grid = document.getElementById('charts-grid');
   grid.innerHTML = '';
   if (!list.length) return;
-  var labels = list.map(function(a) { return a.name.split(' ')[0]; });
+  var labels = list.map(function(a){return a.name.split(' ')[0];});
   var defs = [
-    { title: 'QA Score (%)',               data: list.map(function(a) { return a.qa || 0; }),          color: '#057a55' },
-    { title: 'FCR % (First Contact Res.)', data: list.map(function(a) { return a.fcr; }),              color: '#1a56db' },
-    { title: 'Avg Customers per Day',      data: list.map(function(a) { return a.cxPerDay; }),         color: '#7c3aed' },
-    { title: 'Login Utilized (%)',         data: list.map(function(a) { return a.loginUtil || 0; }),   color: '#b45309' },
-    { title: 'By Response (Fulfilled)',    data: list.map(function(a) { return a.byResponse; }),       color: '#0e9f6e' },
-    { title: 'Missed – No Reply',     data: list.map(function(a) { return a.noReply; }),          color: '#e3a008' },
+    { title:'QA Score (%)',              data:list.map(function(a){return a.qa||0;}),          color:'#057a55' },
+    { title:'FCR % (First Contact Res.)',data:list.map(function(a){return a.fcr;}),            color:'#1a56db' },
+    { title:'Avg Customers per Day',     data:list.map(function(a){return a.cxPerDay;}),       color:'#7c3aed' },
+    { title:'Login Utilized (%)',        data:list.map(function(a){return a.loginUtil||0;}),   color:'#b45309' },
+    { title:'By Response (Fulfilled)',   data:list.map(function(a){return a.byResponse;}),     color:'#0e9f6e' },
+    { title:'Missed – No Reply',   data:list.map(function(a){return a.noReply;}),        color:'#e3a008' },
   ];
-  defs.forEach(function(cfg) {
+  defs.forEach(function(cfg){
     var card = document.createElement('div');
     card.className = 'chart-card';
-    card.innerHTML = '<h3>' + cfg.title + '</h3><canvas></canvas>';
+    card.innerHTML = '<h3>'+cfg.title+'</h3><canvas></canvas>';
     grid.appendChild(card);
-    var inst = new Chart(card.querySelector('canvas'), {
-      type: 'bar',
-      data: { labels: labels, datasets: [{ data: cfg.data, backgroundColor: cfg.color + 'bb', borderColor: cfg.color, borderWidth: 1.5, borderRadius: 6 }] },
-      options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: '#f0f0f0' } }, x: { grid: { display: false } } } }
-    });
-    charts.push(inst);
+    charts.push(new Chart(card.querySelector('canvas'),{
+      type:'bar',
+      data:{labels:labels,datasets:[{data:cfg.data,backgroundColor:cfg.color+'bb',borderColor:cfg.color,borderWidth:1.5,borderRadius:6}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#f0f0f0'}},x:{grid:{display:false}}}}
+    }));
   });
 }
 
 function renderTable() {
   var tbody = document.getElementById('table-body');
   var list = getActive();
-  var rows = list.map(function(a) {
+  var rows = list.map(function(a){
     return '<tr>'
-      + '<td>' + a.name + '</td>'
-      + '<td>' + (a.qa !== null ? tagged(a.qa, 95, 90, '%') : '<span class="tag-na">N/A</span>') + '</td>'
-      + '<td>' + tagged(a.fcr, 50, 40, '%') + '</td>'
-      + '<td>' + a.cxPerDay + '</td>'
-      + '<td>' + a.htCx + '</td>'
-      + '<td>' + a.chatAHT + '</td>'
-      + '<td>' + a.noReply + '</td>'
-      + '<td>' + (a.avgLogin || '<span class="tag-na">N/A</span>') + '</td>'
-      + '<td>' + (a.loginUtil !== null ? tagged(a.loginUtil, 90, 80, '%') : '<span class="tag-na">N/A</span>') + '</td>'
-      + '<td>' + (a.productivity !== null ? tagged(a.productivity, 60, 40, '%') : '<span class="tag-na">—</span>') + '</td>'
-      + '<td>' + a.byResponse + '</td>'
-      + '</tr>';
+      +'<td>'+a.name+'</td>'
+      +'<td>'+(a.qa!==null?tagged(a.qa,95,90,'%'):'<span class="tag-na">N/A</span>')+'</td>'
+      +'<td>'+tagged(a.fcr,50,40,'%')+'</td>'
+      +'<td>'+a.cxPerDay+'</td>'
+      +'<td>'+a.htCx+'</td>'
+      +'<td>'+a.chatAHT+'</td>'
+      +'<td>'+a.noReply+'</td>'
+      +'<td>'+(a.avgLogin||'<span class="tag-na">N/A</span>')+'</td>'
+      +'<td>'+(a.loginUtil!==null?tagged(a.loginUtil,90,80,'%'):'<span class="tag-na">N/A</span>')+'</td>'
+      +'<td>'+(a.productivity!==null?tagged(a.productivity,60,40,'%'):'<span class="tag-na">—</span>')+'</td>'
+      +'<td>'+a.byResponse+'</td>'
+      +'</tr>';
   });
-  rows.push('<tr class="avg-row"><td>Team Avg</td><td>' + TEAM.qa + '%</td><td>' + TEAM.fcr + '%</td><td>' + TEAM.cxPerDay + '</td><td>' + TEAM.htCx + '</td><td>' + TEAM.chatAHT + '</td><td>—</td><td>' + TEAM.avgLogin + '</td><td>' + TEAM.loginUtil + '%</td><td>—</td><td>—</td></tr>');
+  rows.push('<tr class="avg-row"><td>Team Avg</td><td>'+TEAM.qa+'%</td><td>'+TEAM.fcr+'%</td><td>'+TEAM.cxPerDay+'</td><td>'+TEAM.htCx+'</td><td>'+TEAM.chatAHT+'</td><td>—</td><td>'+TEAM.avgLogin+'</td><td>'+TEAM.loginUtil+'%</td><td>—</td><td>—</td></tr>');
   tbody.innerHTML = rows.join('');
 }
 
-function stat(label, value, cls) {
-  return '<div class="stat-item"><div class="stat-label">' + label + '</div><div class="stat-value ' + cls + '">' + value + '</div></div>';
+function stat(label,value,cls){
+  return '<div class="stat-item"><div class="stat-label">'+label+'</div><div class="stat-value '+cls+'">'+value+'</div></div>';
 }
 
 function renderCards() {
   var el = document.getElementById('agent-cards-grid');
   var list = getActive();
-  el.innerHTML = list.map(function(a, i) {
-    var initials = a.name.split(' ').map(function(w) { return w[0]; }).join('').slice(0,2).toUpperCase();
-    var color = COLORS[i % COLORS.length];
-    var qaC  = a.qa === null ? '' : a.qa >= 95 ? 'good' : a.qa >= 90 ? 'warn' : 'bad';
-    var fcrC = a.fcr >= 50 ? 'good' : a.fcr >= 40 ? '' : 'bad';
-    var luC  = a.loginUtil === null ? '' : a.loginUtil >= 90 ? 'good' : a.loginUtil >= 80 ? '' : 'bad';
-    return '<div class="agent-card"><div class="agent-header" style="background:' + color + '"><div class="agent-avatar">' + initials + '</div><div><div class="agent-name">' + a.name + '</div><div class="agent-sub">Follows &bull; ' + a.days + ' days worked</div></div></div><div class="agent-stats">'
-      + stat('QA Score',         a.qa !== null ? a.qa + '%' : 'N/A', qaC)
-      + stat('FCR %',            a.fcr + '%', fcrC)
-      + stat('Avg Cx / Day',     a.cxPerDay, '')
-      + stat('Handle Time / Cx', a.htCx, '')
-      + stat('Chat AHT',         a.chatAHT, '')
-      + stat('Missed (No Reply)', a.noReply, '')
-      + stat('Avg Login',        a.avgLogin || 'N/A', '')
-      + stat('Login Utilized',   a.loginUtil !== null ? a.loginUtil + '%' : 'N/A', luC)
-      + stat('Productivity',     a.productivity !== null ? a.productivity + '%' : '—', '')
-      + stat('By Response',      a.byResponse, '')
-      + '</div></div>';
+  el.innerHTML = list.map(function(a,i){
+    var initials = a.name.split(' ').map(function(w){return w[0];}).join('').slice(0,2).toUpperCase();
+    var color = COLORS[i%COLORS.length];
+    var qaC  = a.qa===null?'':a.qa>=95?'good':a.qa>=90?'warn':'bad';
+    var fcrC = a.fcr>=50?'good':a.fcr>=40?'':'bad';
+    var luC  = a.loginUtil===null?'':a.loginUtil>=90?'good':a.loginUtil>=80?'':'bad';
+    return '<div class="agent-card">'
+      +'<div class="agent-header" style="background:'+color+'">'
+      +'<div class="agent-avatar">'+initials+'</div>'
+      +'<div><div class="agent-name">'+a.name+'</div><div class="agent-sub">Follows &bull; '+a.days+' days worked</div></div>'
+      +'</div><div class="agent-stats">'
+      +stat('QA Score',         a.qa!==null?a.qa+'%':'N/A',     qaC)
+      +stat('FCR %',            a.fcr+'%',                       fcrC)
+      +stat('Avg Cx / Day',     a.cxPerDay,                      '')
+      +stat('Handle Time / Cx', a.htCx,                          '')
+      +stat('Chat AHT',         a.chatAHT,                       '')
+      +stat('Missed (No Reply)',a.noReply,                        '')
+      +stat('Avg Login',        a.avgLogin||'N/A',                '')
+      +stat('Login Utilized',   a.loginUtil!==null?a.loginUtil+'%':'N/A', luC)
+      +stat('Productivity',     a.productivity!==null?a.productivity+'%':'—', '')
+      +stat('By Response',      a.byResponse,                    '')
+      +'</div></div>';
   }).join('');
 }
 
