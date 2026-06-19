@@ -239,7 +239,7 @@ var DATASETS = {
     startISO: '2026-06-01', endISO: '2026-06-18',
     agents: [
       { name: 'Geal Ann Lorico',   days: 10, respPerDay: 61.1, convs: 203, ahtMin: 6, cxPerDay: 20.3, cxPerHr: 3, loginUtil: 89.05, loginHrs: 7.16, awayTime: 53, awayOcc: 3, chatMin: 31, qaScore: 97.96 },
-      { name: 'Roynalyn Malcampo', days: 11, respPerDay: 95.4, convs: 349, ahtMin: 8, cxPerDay: 31.7, cxPerHr: 4, loginUtil: 90.85, loginHrs: 7.42, awayTime: 45, awayOcc: 3, chatMin: 61, qaScore: 98.21 },
+      { name: 'Roynalyn Malcampo', days: 11, respPerDay: 95.4, convs: 349, ahtMin: 8, cxPerDay: 31.7, cxPerHr: 4, loginUtil: 90.85, loginHrs: 7.42, awayTime: 45, awayOcc: 3, chatMin: 61, qaScore: 95.74 },
       { name: 'Jessica Iba\xf1ez',   days: 15, respPerDay: 4.1,  convs: 64,  ahtMin: 0, cxPerDay: 4.3,  cxPerHr: 3, loginUtil: 95.69, loginHrs: 1.43, awayTime: 4,  awayOcc: null, chatMin: 0,  qaScore: null, newAgent: true },
     ],
     team: { respPerDay: 78.3, convs: 276, ahtMin: 7, cxPerDay: 26.0, loginUtil: 89.95, loginHrs: 7.29, chatMin: 46.0, qaScore: 98.09 }
@@ -411,7 +411,7 @@ function renderCharts() {
   });
 }
 
-// ─── Table ─────────────────────────────────────────────────────────────────
+// ─── Table ────────────────────────────────────────────────────────────────
 function renderTable() {
   var tbody = document.getElementById('table-body');
   var list  = getActive();
