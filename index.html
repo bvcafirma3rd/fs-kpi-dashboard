@@ -171,7 +171,7 @@
 
 <div class="section">
   <div class="section-title">Agent Comparison Charts</div>
-  <div class="charts-grid" id="charrts-grid"></div>
+  <div class="charts-grid" id="charts-grid"></div>
 </div>
 
 <div class="divider"></div>
@@ -330,7 +330,7 @@ function applyFilter() {
   document.getElementById('chip-all').classList.toggle('active', all);
   render();
 }
-funtion getActive() { return AGENTS.filter(a => active.includes(a.name)); }
+function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function tagged(v, good, warn, suffix) {
