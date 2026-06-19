@@ -171,7 +171,7 @@
 
 <div class="section">
   <div class="section-title">Agent Comparison Charts</div>
-  <div class="charts-grid" id="charts-grid"></div>
+  <div class="charts-grid" id="charrts-grid"></div>
 </div>
 
 <div class="divider"></div>
@@ -191,7 +191,8 @@
           <th>Avg Login</th>
           <th>Resp / Day</th>
           <th>Total Convs</th>
-          <th>Away Hrs</th>
+          <th>Away Time</th>
+          <th>Away Occ</th>
         </tr>
       </thead>
       <tbody id="table-body"></tbody>
@@ -228,18 +229,18 @@ var DATASETS = {
   may: {
     startISO: '2026-05-01', endISO: '2026-05-31',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 23, respPerDay: 137.7, convs: 755, ahtMin: 7, cxPerDay: 32.8, cxPerHr: 4, loginUtil: 89.71, loginHrs: 7.31, awayHrs: 19.28, chatMin: 61, qaScore: 89.80 },
-      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 133.6, convs: 894, ahtMin: 8, cxPerDay: 44.7, cxPerHr: 6, loginUtil: 90.52, loginHrs: 7.48, awayHrs: 15.67, chatMin: 69, qaScore: 89.80 },
-      { name: 'Jessica Ibañez',   days: 0,  respPerDay: 0,     convs: 0,   ahtMin: 0, cxPerDay: 0,    cxPerHr: 0, loginUtil: 0,     loginHrs: 0,    awayHrs: 0,     chatMin: 0,  qaScore: null, newAgent: true },
+      { name: 'Geal Ann Lorico',   days: 23, respPerDay: 137.7, convs: 755, ahtMin: 7, cxPerDay: 32.8, cxPerHr: 4, loginUtil: 89.71, loginHrs: 7.31, awayTime: 50, awayOcc: 4, chatMin: 61, qaScore: 89.80 },
+      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 133.6, convs: 894, ahtMin: 8, cxPerDay: 44.7, cxPerHr: 6, loginUtil: 90.52, loginHrs: 7.48, awayTime: 50, awayOcc: 4, chatMin: 69, qaScore: 89.80 },
+      { name: 'Jessica Iba\xf1ez',   days: 0,  respPerDay: 0,     convs: 0,   ahtMin: 0, cxPerDay: 0,    cxPerHr: 0, loginUtil: 0,     loginHrs: 0,    awayTime: 0,  awayOcc: null, chatMin: 0,  qaScore: null, newAgent: true },
     ],
     team: { respPerDay: 136, convs: 825, ahtMin: 7, cxPerDay: 39, loginUtil: 90.12, loginHrs: 7.40, chatMin: 65.14, qaScore: 89.80 }
   },
   june: {
     startISO: '2026-06-01', endISO: '2026-06-18',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 10, respPerDay: 61.1, convs: 203, ahtMin: 6, cxPerDay: 20.3, cxPerHr: 3, loginUtil: 89.05, loginHrs: 7.16, awayHrs: 8.80, chatMin: 31, qaScore: 97.96 },
-      { name: 'Roynalyn Malcampo', days: 11, respPerDay: 95.4, convs: 349, ahtMin: 8, cxPerDay: 31.7, cxPerHr: 4, loginUtil: 90.85, loginHrs: 7.42, awayHrs: 8.21, chatMin: 61, qaScore: 98.21 },
-      { name: 'Jessica Ibañez',   days: 15, respPerDay: 4.1,  convs: 64,  ahtMin: 0, cxPerDay: 4.3,  cxPerHr: 3, loginUtil: 95.69, loginHrs: 1.43, awayHrs: 0.93, chatMin: 0,  qaScore: null, newAgent: true },
+      { name: 'Geal Ann Lorico',   days: 10, respPerDay: 61.1, convs: 203, ahtMin: 6, cxPerDay: 20.3, cxPerHr: 3, loginUtil: 89.05, loginHrs: 7.16, awayTime: 53, awayOcc: 3, chatMin: 31, qaScore: 97.96 },
+      { name: 'Roynalyn Malcampo', days: 11, respPerDay: 95.4, convs: 349, ahtMin: 8, cxPerDay: 31.7, cxPerHr: 4, loginUtil: 90.85, loginHrs: 7.42, awayTime: 45, awayOcc: 3, chatMin: 61, qaScore: 98.21 },
+      { name: 'Jessica Iba\xf1ez',   days: 15, respPerDay: 4.1,  convs: 64,  ahtMin: 0, cxPerDay: 4.3,  cxPerHr: 3, loginUtil: 95.69, loginHrs: 1.43, awayTime: 4,  awayOcc: null, chatMin: 0,  qaScore: null, newAgent: true },
     ],
     team: { respPerDay: 78.3, convs: 276, ahtMin: 7, cxPerDay: 26.0, loginUtil: 89.95, loginHrs: 7.29, chatMin: 46.0, qaScore: 98.09 }
   }
@@ -329,7 +330,7 @@ function applyFilter() {
   document.getElementById('chip-all').classList.toggle('active', all);
   render();
 }
-function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
+funtion getActive() { return AGENTS.filter(a => active.includes(a.name)); }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function tagged(v, good, warn, suffix) {
@@ -362,7 +363,7 @@ function renderKpi() {
     return '<div class="kpi-card ' + c.cls + '">'
       + '<div class="label">' + c.label + '</div>'
       + '<div class="value">' + c.val + '</div>'
-      + '<div class="sub">Team avg · ' + SNAPSHOT_DATE + '</div>'
+      + '<div class="sub">Team avg \xb7 ' + SNAPSHOT_DATE + '</div>'
       + '</div>';
   }).join('');
 }
@@ -428,7 +429,8 @@ function renderTable() {
       + '<td>' + hrsToHMm(a.loginHrs) + '</td>'
       + '<td>' + a.respPerDay + '</td>'
       + '<td>' + a.convs.toLocaleString() + '</td>'
-      + '<td>' + a.awayHrs + '</td>'
+      + '<td>' + (a.awayTime ? a.awayTime + 'm avg' : '—') + '</td>'
+      + '<td>' + (a.awayOcc != null ? a.awayOcc : '—') + '</td>'
       + '</tr>';
   });
 
@@ -442,6 +444,7 @@ function renderTable() {
     + '<td>' + hrsToHMm(TEAM.loginHrs) + '</td>'
     + '<td>' + TEAM.respPerDay + '</td>'
     + '<td>' + TEAM.convs.toLocaleString() + '</td>'
+    + '<td>—</td>'
     + '<td>—</td>'
     + '</tr>');
 
@@ -476,7 +479,8 @@ function renderCards() {
       + stat('Avg Login',      hrsToHMm(a.loginHrs), '')
       + stat('Resp / Day',     a.respPerDay, '')
       + stat('Total Convs',    a.convs.toLocaleString(), '')
-      + stat('Away Hours',     a.awayHrs, '')
+      + stat('Away Time (avg)', a.awayTime ? a.awayTime + ' min' : '—', '')
+      + stat('Away Occ (max)', a.awayOcc != null ? a.awayOcc : '—', '')
       + '</div></div>';
   }).join('');
 }
