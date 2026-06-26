@@ -186,7 +186,7 @@
           <th>QA Score</th>
           <th>Avg Cx / Day</th>
           <th>AHT (mm:ss)</th>
-          <th>Chat AHT</th>
+          <th>Chat AHT (mm:ss)</th>
           <th>Login Utilized</th>
           <th>Avg Login</th>
           <th>Resp / Day</th>
@@ -352,7 +352,7 @@ function renderKpi() {
     { label: 'Team QA Score',  val: TEAM.qaScore + '%',               cls: TEAM.qaScore >= 95 ? 'good' : TEAM.qaScore >= 90 ? '' : 'warn' },
     { label: 'Avg Cx / Day',   val: Math.round(avgCx).toString(),    cls: '' },
     { label: 'AHT (mm:ss)',    val: minToMmSs(TEAM.ahtMin),          cls: 'warn' },
-    { label: 'Chat AHT',       val: minToMmSs(TEAM.chatMin),         cls: '' },
+    { label: 'Chat AHT (mm:ss)', val: minToMmSs(TEAM.chatMin),         cls: '' },
     { label: 'Login Utilized', val: TEAM.loginUtil + '%',             cls: TEAM.loginUtil >= 90 ? 'good' : 'warn' },
     { label: 'Avg Login',      val: hrsToHMm(TEAM.loginHrs),         cls: '' },
     { label: 'Total Convs',    val: totConvs.toLocaleString(),        cls: '' },
@@ -474,7 +474,7 @@ function renderCards() {
       + stat('QA Score',       qaVal, qaC)
       + stat('Avg Cx / Day',   a.cxPerDay, '')
       + stat('AHT (mm:ss)',    minToMmSs(a.ahtMin), '')
-      + stat('Chat AHT',       minToMmSs(a.chatMin), '')
+      + stat('Chat AHT (mm:ss)', minToMmSs(a.chatMin), '')
       + stat('Login Utilized', a.loginUtil + '%', luC)
       + stat('Avg Login',      hrsToHMm(a.loginHrs), '')
       + stat('Resp / Day',     a.respPerDay, '')
