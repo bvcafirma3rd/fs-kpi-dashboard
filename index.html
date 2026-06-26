@@ -141,7 +141,7 @@
   <div>
     <h1>Support Team KPI Dashboard</h1>
     <div class="meta">
-      <span>&#128101; Follows Team &nbsp;Â·&nbsp; <span id="display-range"></span></span>
+      <span>&#128101; Follows Team &nbsp;·&nbsp; <span id="display-range"></span></span>
       <span>&#128197; Snapshot updated <span id="display-updated"></span></span>
     </div>
   </div>
@@ -212,7 +212,7 @@
 </div>
 
 <script>
-// âââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Helpers ───────────────────────────────────────────────────────────────
 function minToMmSs(min) {
   var m = Math.floor(min);
   var s = Math.round((min - m) * 60);
@@ -224,7 +224,7 @@ function hrsToHMm(hrs) {
   return h + ':' + (m < 10 ? '0' : '') + m;
 }
 
-// âââ Embedded datasets âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Embedded datasets ─────────────────────────────────────────────────────
 var DATASETS = {
   may: {
     startISO: '2026-05-01', endISO: '2026-05-31',
@@ -246,7 +246,7 @@ var DATASETS = {
   }
 };
 
-// âââ Date & dataset selection ââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Date & dataset selection ──────────────────────────────────────────────
 function fmtDate(iso) {
   var d = new Date(iso + 'T00:00:00');
   return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
@@ -269,10 +269,10 @@ var _dates        = getDatesFromURL();
 var DATASET       = DATASETS[_dates.key];
 var AGENTS        = DATASET.agents;
 var TEAM          = DATASET.team;
-var SNAPSHOT_DATE = fmtDate(_dates.start) + ' â ' + fmtDate(_dates.end);
+var SNAPSHOT_DATE = fmtDate(_dates.start) + ' – ' + fmtDate(_dates.end);
 var UPDATED_AT    = _dates.end;
 
-// Wire up all event listeners (no inline onclick/onchange â blocked by CSP on GitHub Pages)
+// Wire up all event listeners (no inline onclick/onchange \u2014 blocked by CSP on GitHub Pages)
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
   document.getElementById('display-updated').textContent = fmtDate(UPDATED_AT);
@@ -294,11 +294,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const COLORS = ['#1a56db', '#057a55', '#7c3aed'];
 
-// âââ State âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── State ─────────────────────────────────────────────────────────────────
 let active = AGENTS.map(a => a.name);
 let charts = [];
 
-// âââ Agent filter ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Agent filter ──────────────────────────────────────────────────────────
 function initFilter() {
   var box = document.getElementById('agent-chips');
   box.innerHTML = '';
@@ -332,14 +332,14 @@ function applyFilter() {
 }
 function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
 
-// âââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Helpers ───────────────────────────────────────────────────────────────
 function tagged(v, good, warn, suffix) {
   if (v === null || v === undefined) return '<span class="tag-na">N/A</span>';
   var cls = v >= good ? 'tag-good' : v >= warn ? 'tag-warn' : 'tag-bad';
   return '<span class="' + cls + '">' + v + (suffix || '') + '</span>';
 }
 
-// âââ KPI summary cards âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── KPI summary cards ─────────────────────────────────────────────────────
 function renderKpi() {
   var el = document.getElementById('kpi-grid');
   var list = getActive();
@@ -368,7 +368,7 @@ function renderKpi() {
   }).join('');
 }
 
-// âââ Charts ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Charts ────────────────────────────────────────────────────────────────
 function renderCharts() {
   charts.forEach(function(c) { c.destroy(); });
   charts = [];
@@ -411,7 +411,7 @@ function renderCharts() {
   });
 }
 
-// âââ Table âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Table ─────────────────────────────────────────────────────────────────
 function renderTable() {
   var tbody = document.getElementById('table-body');
   var list  = getActive();
@@ -429,8 +429,8 @@ function renderTable() {
       + '<td>' + hrsToHMm(a.loginHrs) + '</td>'
       + '<td>' + a.respPerDay + '</td>'
       + '<td>' + a.convs.toLocaleString() + '</td>'
-      + '<td>' + (a.awayTime ? a.awayTime + 'm avg' : 'â') + '</td>'
-      + '<td>' + (a.awayOcc != null ? a.awayOcc : 'â') + '</td>'
+      + '<td>' + (a.awayTime ? a.awayTime + 'm avg' : '\u2014') + '</td>'
+      + '<td>' + (a.awayOcc != null ? a.awayOcc : '\u2014') + '</td>'
       + '</tr>';
   });
 
@@ -444,14 +444,14 @@ function renderTable() {
     + '<td>' + hrsToHMm(TEAM.loginHrs) + '</td>'
     + '<td>' + TEAM.respPerDay + '</td>'
     + '<td>' + TEAM.convs.toLocaleString() + '</td>'
-    + '<td>â</td>'
-    + '<td>â</td>'
+    + '<td>\u2014</td>'
+    + '<td>\u2014</td>'
     + '</tr>');
 
   tbody.innerHTML = rows.join('');
 }
 
-// âââ Agent cards âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Agent cards ───────────────────────────────────────────────────────────
 function renderCards() {
   var el   = document.getElementById('agent-cards-grid');
   var list = getActive();
@@ -468,7 +468,7 @@ function renderCards() {
       + '<div class="agent-header" style="background:' + color + '">'
       + '<div class="agent-avatar">' + initials + '</div>'
       + '<div><div class="agent-name">' + a.name + '</div>'
-      + '<div class="agent-sub">' + (a.newAgent ? 'New Agent â¢ Joined Jun 2026' : 'Follows Team â¢ ' + a.days + ' days worked') + '</div></div>'
+      + '<div class="agent-sub">' + (a.newAgent ? 'New Agent • Joined Jun 2026' : 'Follows Team • ' + a.days + ' days worked') + '</div></div>'
       + '</div>'
       + '<div class="agent-stats">'
       + stat('QA Score',       qaVal, qaC)
@@ -479,8 +479,8 @@ function renderCards() {
       + stat('Avg Login',      hrsToHMm(a.loginHrs), '')
       + stat('Resp / Day',     a.respPerDay, '')
       + stat('Total Convs',    a.convs.toLocaleString(), '')
-      + stat('Away Time (avg)', a.awayTime ? a.awayTime + ' min' : 'â', '')
-      + stat('Away Occ (max)', a.awayOcc != null ? a.awayOcc : 'â', '')
+      + stat('Away Time (avg)', a.awayTime ? a.awayTime + ' min' : '\u2014', '')
+      + stat('Away Occ (max)', a.awayOcc != null ? a.awayOcc : '\u2014', '')
       + '</div></div>';
   }).join('');
 }
@@ -492,7 +492,7 @@ function stat(label, value, cls) {
     + '</div>';
 }
 
-// âââ Render all âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Render all ─────────────────────────────────────────────────────────────
 function render() {
   renderKpi();
   renderCharts();
