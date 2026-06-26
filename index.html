@@ -141,7 +141,7 @@
   <div>
     <h1>Support Team KPI Dashboard</h1>
     <div class="meta">
-      <span>&#128101; Follows Team &nbsp;·&nbsp; <span id="display-range"></span></span>
+      <span>&#128101; Follows Team &nbsp;Â·&nbsp; <span id="display-range"></span></span>
       <span>&#128197; Snapshot updated <span id="display-updated"></span></span>
     </div>
   </div>
@@ -212,7 +212,7 @@
 </div>
 
 <script>
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// âââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function minToMmSs(min) {
   var m = Math.floor(min);
   var s = Math.round((min - m) * 60);
@@ -224,7 +224,7 @@ function hrsToHMm(hrs) {
   return h + ':' + (m < 10 ? '0' : '') + m;
 }
 
-// ─── Embedded datasets ─────────────────────────────────────────────────────
+// âââ Embedded datasets âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 var DATASETS = {
   may: {
     startISO: '2026-05-01', endISO: '2026-05-31',
@@ -236,17 +236,17 @@ var DATASETS = {
     team: { respPerDay: 136, convs: 825, ahtMin: 7, cxPerDay: 39, loginUtil: 90.12, loginHrs: 7.40, chatMin: 65.14, qaScore: 89.80 }
   },
   june: {
-    startISO: '2026-06-01', endISO: '2026-06-23',
+    startISO: '2026-06-01', endISO: '2026-06-26',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 15, respPerDay: 64.0, convs: 320, ahtMin: 7, cxPerDay: 21, cxPerHr: 3, loginUtil: 89.31, loginHrs: 8.06, awayTime: 52, awayOcc: 3, chatMin: 30, qaScore: 98.41 },
-      { name: 'Roynalyn Malcampo', days: 16, respPerDay: 105.0, convs: 560, ahtMin: 8, cxPerDay: 34, cxPerHr: 4, loginUtil: 90.93, loginHrs: 8.19, awayTime: 45, awayOcc: 3, chatMin: 59, qaScore: 96.22 },
+      { name: 'Geal Ann Lorico',   days: 12, respPerDay: 20.0, convs: 247, ahtMin: 6, cxPerDay: 20, cxPerHr: 2.5, loginUtil: 89.31, loginHrs: 8.05, awayTime: 52, awayOcc: 3, chatMin: 30, qaScore: 97.38 },
+      { name: 'Roynalyn Malcampo', days: 15, respPerDay: 21.0, convs: 320, ahtMin: 7.5, cxPerDay: 21, cxPerHr: 2.6, loginUtil: 90.61, loginHrs: 8.06, awayTime: 45, awayOcc: 3, chatMin: 59, qaScore: 95.97 },
       { name: 'Jessica Iba\xf1ez',   days: 17, respPerDay: 4.1,  convs: 73,  ahtMin: 0, cxPerDay: 4.3,  cxPerHr: 3, loginUtil: 95.69, loginHrs: 1.43, awayTime: 4,  awayOcc: null, chatMin: 0,  qaScore: null, newAgent: true },
     ],
-    team: { respPerDay: 84.5, convs: 440, ahtMin: 7.5, cxPerDay: 27.5, loginUtil: 90.12, loginHrs: 8.13, chatMin: 44.5, qaScore: 97.31 }
+    team: { respPerDay: 20.5, convs: 284, ahtMin: 6.75, cxPerDay: 20.5, loginUtil: 89.96, loginHrs: 8.06, chatMin: 44.5, qaScore: 96.68 }
   }
 };
 
-// ─── Date & dataset selection ──────────────────────────────────────────────
+// âââ Date & dataset selection ââââââââââââââââââââââââââââââââââââââââââââââ
 function fmtDate(iso) {
   var d = new Date(iso + 'T00:00:00');
   return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
@@ -269,10 +269,10 @@ var _dates        = getDatesFromURL();
 var DATASET       = DATASETS[_dates.key];
 var AGENTS        = DATASET.agents;
 var TEAM          = DATASET.team;
-var SNAPSHOT_DATE = fmtDate(_dates.start) + ' – ' + fmtDate(_dates.end);
+var SNAPSHOT_DATE = fmtDate(_dates.start) + ' â ' + fmtDate(_dates.end);
 var UPDATED_AT    = _dates.end;
 
-// Wire up all event listeners (no inline onclick/onchange — blocked by CSP on GitHub Pages)
+// Wire up all event listeners (no inline onclick/onchange â blocked by CSP on GitHub Pages)
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
   document.getElementById('display-updated').textContent = fmtDate(UPDATED_AT);
@@ -294,11 +294,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const COLORS = ['#1a56db', '#057a55', '#7c3aed'];
 
-// ─── State ─────────────────────────────────────────────────────────────────
+// âââ State âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 let active = AGENTS.map(a => a.name);
 let charts = [];
 
-// ─── Agent filter ──────────────────────────────────────────────────────────
+// âââ Agent filter ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function initFilter() {
   var box = document.getElementById('agent-chips');
   box.innerHTML = '';
@@ -332,14 +332,14 @@ function applyFilter() {
 }
 function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// âââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function tagged(v, good, warn, suffix) {
   if (v === null || v === undefined) return '<span class="tag-na">N/A</span>';
   var cls = v >= good ? 'tag-good' : v >= warn ? 'tag-warn' : 'tag-bad';
   return '<span class="' + cls + '">' + v + (suffix || '') + '</span>';
 }
 
-// ─── KPI summary cards ─────────────────────────────────────────────────────
+// âââ KPI summary cards âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderKpi() {
   var el = document.getElementById('kpi-grid');
   var list = getActive();
@@ -368,7 +368,7 @@ function renderKpi() {
   }).join('');
 }
 
-// ─── Charts ────────────────────────────────────────────────────────────────
+// âââ Charts ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderCharts() {
   charts.forEach(function(c) { c.destroy(); });
   charts = [];
@@ -411,7 +411,7 @@ function renderCharts() {
   });
 }
 
-// ─── Table ────────────────────────────────────────────────────────────────
+// âââ Table âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderTable() {
   var tbody = document.getElementById('table-body');
   var list  = getActive();
@@ -429,8 +429,8 @@ function renderTable() {
       + '<td>' + hrsToHMm(a.loginHrs) + '</td>'
       + '<td>' + a.respPerDay + '</td>'
       + '<td>' + a.convs.toLocaleString() + '</td>'
-      + '<td>' + (a.awayTime ? a.awayTime + 'm avg' : '—') + '</td>'
-      + '<td>' + (a.awayOcc != null ? a.awayOcc : '—') + '</td>'
+      + '<td>' + (a.awayTime ? a.awayTime + 'm avg' : 'â') + '</td>'
+      + '<td>' + (a.awayOcc != null ? a.awayOcc : 'â') + '</td>'
       + '</tr>';
   });
 
@@ -444,14 +444,14 @@ function renderTable() {
     + '<td>' + hrsToHMm(TEAM.loginHrs) + '</td>'
     + '<td>' + TEAM.respPerDay + '</td>'
     + '<td>' + TEAM.convs.toLocaleString() + '</td>'
-    + '<td>—</td>'
-    + '<td>—</td>'
+    + '<td>â</td>'
+    + '<td>â</td>'
     + '</tr>');
 
   tbody.innerHTML = rows.join('');
 }
 
-// ─── Agent cards ───────────────────────────────────────────────────────────
+// âââ Agent cards âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderCards() {
   var el   = document.getElementById('agent-cards-grid');
   var list = getActive();
@@ -468,7 +468,7 @@ function renderCards() {
       + '<div class="agent-header" style="background:' + color + '">'
       + '<div class="agent-avatar">' + initials + '</div>'
       + '<div><div class="agent-name">' + a.name + '</div>'
-      + '<div class="agent-sub">' + (a.newAgent ? 'New Agent • Joined Jun 2026' : 'Follows Team • ' + a.days + ' days worked') + '</div></div>'
+      + '<div class="agent-sub">' + (a.newAgent ? 'New Agent â¢ Joined Jun 2026' : 'Follows Team â¢ ' + a.days + ' days worked') + '</div></div>'
       + '</div>'
       + '<div class="agent-stats">'
       + stat('QA Score',       qaVal, qaC)
@@ -479,8 +479,8 @@ function renderCards() {
       + stat('Avg Login',      hrsToHMm(a.loginHrs), '')
       + stat('Resp / Day',     a.respPerDay, '')
       + stat('Total Convs',    a.convs.toLocaleString(), '')
-      + stat('Away Time (avg)', a.awayTime ? a.awayTime + ' min' : '—', '')
-      + stat('Away Occ (max)', a.awayOcc != null ? a.awayOcc : '—', '')
+      + stat('Away Time (avg)', a.awayTime ? a.awayTime + ' min' : 'â', '')
+      + stat('Away Occ (max)', a.awayOcc != null ? a.awayOcc : 'â', '')
       + '</div></div>';
   }).join('');
 }
@@ -492,7 +492,7 @@ function stat(label, value, cls) {
     + '</div>';
 }
 
-// ─── Render all ─────────────────────────────────────────────────────────────
+// âââ Render all âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function render() {
   renderKpi();
   renderCharts();
