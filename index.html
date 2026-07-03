@@ -238,11 +238,11 @@ var DATASETS = {
   june: {
     startISO: '2026-06-01', endISO: '2026-06-30',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 12, respPerDay: 20.0, convs: 247, ahtMin: 6, cxPerDay: 20, cxPerHr: 2.5, loginUtil: 89.31, loginHrs: 8.05, awayTime: 52, awayOcc: 3, chatMin: 30, qaScore: 97.96 },
-      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 23.0, convs: 474, ahtMin: 7.12, cxPerDay: 23, cxPerHr: 2.8, loginUtil: 90.61, loginHrs: 8.09, awayTime: 45, awayOcc: 3, chatMin: 59, qaScore: 97.90 },
-      { name: 'Jessica Iba\xf1ez',   days: 17, respPerDay: 4.1,  convs: 73,  ahtMin: 0, cxPerDay: 4.3,  cxPerHr: 3, loginUtil: 95.69, loginHrs: 1.43, awayTime: 4,  awayOcc: null, chatMin: 0,  qaScore: null, newAgent: true },
+      { name: 'Geal Ann Lorico',   days: 20, respPerDay: 23,  convs: 474, ahtMin: 5.82, cxPerDay: 23,  cxPerHr: 2.84, loginUtil: 89.26, loginHrs: 8.09, awayTime: 52, awayOcc: 3, chatMin: 40, qaScore: 98.04 },
+      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 34,  convs: 704, ahtMin: 5.97, cxPerDay: 34,  cxPerHr: 4.16, loginUtil: 90.99, loginHrs: 8.18, awayTime: 44, awayOcc: 3, chatMin: 70, qaScore: 96.98 },
+      { name: 'Jessica Iba\xf1ez',   days: 26, respPerDay: 5.4, convs: 141, ahtMin: 8.55, cxPerDay: 5.4, cxPerHr: 3.59, loginUtil: 97.64, loginHrs: 1.51, awayTime: 2,  awayOcc: null, chatMin: 0,  qaScore: 91.2, newAgent: true },
     ],
-    team: { respPerDay: 21.5, convs: 361, ahtMin: 6.56, cxPerDay: 21.5, loginUtil: 89.96, loginHrs: 8.07, chatMin: 44.5, qaScore: 97.93 }
+    team: { respPerDay: 28.5, convs: 589, ahtMin: 5.90, cxPerDay: 28.5, loginUtil: 90.13, loginHrs: 8.14, chatMin: 55, qaScore: 97.51 }
   }
 };
 
@@ -272,7 +272,7 @@ var TEAM          = DATASET.team;
 var SNAPSHOT_DATE = fmtDate(_dates.start) + ' – ' + fmtDate(_dates.end);
 var UPDATED_AT    = _dates.end;
 
-// Wire up all event listeners (no inline onclick/onchange — blocked by CSP on GitHub Pages)
+// Wire up all event listeners (no inline onclick/onchange \u2014 blocked by CSP on GitHub Pages)
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
   document.getElementById('display-updated').textContent = fmtDate(UPDATED_AT);
