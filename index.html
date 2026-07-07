@@ -149,6 +149,7 @@
     <div class="month-tabs">
       <button class="month-tab" id="tab-may"  data-month="may">May 2026</button>
       <button class="month-tab" id="tab-june" data-month="june">June 2026</button>
+      <button class="month-tab" id="tab-july" data-month="july">July 2026</button>
     </div>
     <span class="snapshot-badge">&#128248; Static snapshot</span>
   </div>
@@ -208,11 +209,11 @@
 </div>
 
 <div class="footer">
-  Support Team KPI Dashboard &bull; Data from Adly &ndash; Gladly Agent Reporting (private) &bull; May &amp; June 2026
+  Support Team KPI Dashboard &bull; Data from Adly &ndash; Gladly Agent Reporting (private) &bull; May &ndash; July 2026
 </div>
 
 <script>
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────
 function minToMmSs(min) {
   var m = Math.floor(min);
   var s = Math.round((min - m) * 60);
@@ -224,7 +225,7 @@ function hrsToHMm(hrs) {
   return h + ':' + (m < 10 ? '0' : '') + m;
 }
 
-// ─── Embedded datasets ─────────────────────────────────────────────────────
+// ─── Embedded datasets ──────────────────────────────────────────────────
 var DATASETS = {
   may: {
     startISO: '2026-05-01', endISO: '2026-05-31',
@@ -243,10 +244,19 @@ var DATASETS = {
       { name: 'Jessica Iba\xf1ez',   days: 26, respPerDay: 5.4, convs: 141, ahtMin: 8.55, cxPerDay: 5.4, cxPerHr: 3.59, loginUtil: 97.64, loginHrs: 1.51, awayTime: 2,  awayOcc: null, chatMin: 0,  qaScore: 91.2, newAgent: true },
     ],
     team: { respPerDay: 28.5, convs: 589, ahtMin: 5.90, cxPerDay: 28.5, loginUtil: 90.13, loginHrs: 8.14, chatMin: 55, qaScore: 97.51 }
+  },
+  july: {
+    startISO: '2026-07-01', endISO: '2026-07-07',
+    agents: [
+      { name: 'Geal Ann Lorico',   days: 3.1, respPerDay: 37,   convs: 116, ahtMin: 4.83, cxPerDay: 37,   cxPerHr: 4.64, loginUtil: 90.34, loginHrs: 8.16, awayTime: 47, awayOcc: 3, chatMin: 52.7, qaScore: 100.00 },
+      { name: 'Roynalyn Malcampo', days: 3.1, respPerDay: 42,   convs: 129, ahtMin: 5.10, cxPerDay: 42,   cxPerHr: 5.16, loginUtil: 91.14, loginHrs: 8.18, awayTime: 44, awayOcc: 2, chatMin: 76,   qaScore: 100.00 },
+      { name: 'Jessica Iba\xf1ez',   days: 1.8, respPerDay: 36.2, convs: 64,  ahtMin: 8.55, cxPerDay: 36.2, cxPerHr: 4.53, loginUtil: 98.4,  loginHrs: 8.13, awayTime: 8,  awayOcc: 2, chatMin: 0,    qaScore: null, newAgent: true },
+    ],
+    team: { respPerDay: 39.5, convs: 122.5, ahtMin: 4.97, cxPerDay: 39.5, loginUtil: 90.74, loginHrs: 8.17, chatMin: 64.53, qaScore: 100.00 }
   }
 };
 
-// ─── Date & dataset selection ──────────────────────────────────────────────
+// ─── Date & dataset selection ────────────────────────────────────────────
 function fmtDate(iso) {
   var d = new Date(iso + 'T00:00:00');
   return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
@@ -258,7 +268,10 @@ function getDatesFromURL() {
   if (m === 'may') {
     return { start: DATASETS.may.startISO, end: DATASETS.may.endISO, key: 'may' };
   }
-  return { start: DATASETS.june.startISO, end: DATASETS.june.endISO, key: 'june' };
+  if (m === 'june') {
+    return { start: DATASETS.june.startISO, end: DATASETS.june.endISO, key: 'june' };
+  }
+  return { start: DATASETS.july.startISO, end: DATASETS.july.endISO, key: 'july' };
 }
 
 function switchMonth(key) {
@@ -294,11 +307,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 const COLORS = ['#1a56db', '#057a55', '#7c3aed'];
 
-// ─── State ─────────────────────────────────────────────────────────────────
+// ─── State ──────────────────────────────────────────────────────────────────────────
 let active = AGENTS.map(a => a.name);
 let charts = [];
 
-// ─── Agent filter ──────────────────────────────────────────────────────────
+// ─── Agent filter ─────────────────────────────────────────────────────────────────────
 function initFilter() {
   var box = document.getElementById('agent-chips');
   box.innerHTML = '';
@@ -332,14 +345,14 @@ function applyFilter() {
 }
 function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
 
-// ─── Helpers ───────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────────────
 function tagged(v, good, warn, suffix) {
   if (v === null || v === undefined) return '<span class="tag-na">N/A</span>';
   var cls = v >= good ? 'tag-good' : v >= warn ? 'tag-warn' : 'tag-bad';
   return '<span class="' + cls + '">' + v + (suffix || '') + '</span>';
 }
 
-// ─── KPI summary cards ─────────────────────────────────────────────────────
+// ─── KPI summary cards ───────────────────────────────────────────────────────────────
 function renderKpi() {
   var el = document.getElementById('kpi-grid');
   var list = getActive();
@@ -368,7 +381,7 @@ function renderKpi() {
   }).join('');
 }
 
-// ─── Charts ────────────────────────────────────────────────────────────────
+// ─── Charts ──────────────────────────────────────────────────────────────────────────────
 function renderCharts() {
   charts.forEach(function(c) { c.destroy(); });
   charts = [];
@@ -411,7 +424,7 @@ function renderCharts() {
   });
 }
 
-// ─── Table ─────────────────────────────────────────────────────────────────
+// ─── Table ──────────────────────────────────────────────────────────────────────────────
 function renderTable() {
   var tbody = document.getElementById('table-body');
   var list  = getActive();
@@ -451,7 +464,7 @@ function renderTable() {
   tbody.innerHTML = rows.join('');
 }
 
-// ─── Agent cards ───────────────────────────────────────────────────────────
+// ─── Agent cards ──────────────────────────────────────────────────────────────────────────
 function renderCards() {
   var el   = document.getElementById('agent-cards-grid');
   var list = getActive();
@@ -492,7 +505,7 @@ function stat(label, value, cls) {
     + '</div>';
 }
 
-// ─── Render all ─────────────────────────────────────────────────────────────
+// ─── Render all ───────────────────────────────────────────────────
 function render() {
   renderKpi();
   renderCharts();
