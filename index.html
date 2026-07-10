@@ -537,4 +537,124 @@ function renderCharts() {
   charts.forEach(function(c){ c.destroy(); });
   charts = [];
   var list = getActive();
-  var g
+  var g= document.getElementById('charts-grid');
+  if (!list.length) { g.innerHTML = '<p style="color:var(--muted)">No agents selected.</p>'; return; }
+  var labels = list.map(function(a){ return a.name.split(' ')[0]; });
+
+  // destroy old charts
+  while (g.firstChild) g.removeChild(g.firstChild);
+
+  function mkBar(id, title, data) {
+    var div = document.createElement('div');
+    div.className = 'chart-card';
+    div.innerHTML = '<h3>' + title + '</h3><canvas id="' + id + '"></canvas>';
+    g.appendChild(div);
+    charts.push(new Chart(document.getElementById(id).getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{ label: title, data: data,
+          backgroundColor: COLORS.map(function(c){ return c + 'bb'; }),
+          borderColor: COLORS, borderWidth: 2, borderRadius: 4 }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true }, x: { grid: { display: false } } }
+      }
+    }));
+  }
+
+  mkBar('ch-fulfilled', 'Total Fulfilled',    list.map(function(a){ return a.fulfilled; }));
+  mkBar('ch-cxperday',  'Customers / Day',    list.map(function(a){ return a.cxPerDay; }));
+  mkBar('ch-utilized',  'Login Utilized (%)', list.map(function(a){ return a.utilized; }));
+  mkBar('ch-qa',        'MTD QA Score (%)',   list.map(function(a){ return a.qa; }));
+}
+
+// ─── Full metrics table ───────────────────────────────────────────────────────
+function renderTable() {
+  var list = getActive();
+  var tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  function row(a, isTeam) {
+    var cls = isTeam ? ' class="avg-row"' : '';
+    return '<tr' + cls + '>'
+      + '<td>' + a.name + '</td>'
+      + '<td>' + na(a.workedHrs) + '</td>'
+      + '<td>' + na(a.days) + '</td>'
+      + '<td>' + na(a.fulfilled) + '</td>'
+      + '<td class="col-mtd">'   + na(a.noReply)       + '</td>'
+      + '<td class="col-mtd">'   + tagFCR(a.fcr)        + '</td>'
+      + '<td class="col-mtd">'   + tagPct(a.qa, 95, 90) + '</td>'
+      + '<td class="col-mtd">'   + na(a.csat, '%', 2)   + '</td>'
+      + '<td class="col-daily">' + na(a.cxPerDay)       + '</td>'
+      + '<td class="col-daily">' + naStr(a.handleTime)  + '</td>'
+      + '<td class="col-daily">' + naStr(a.handlePerCust) + '</td>'
+      + '<td class="col-login">' + naStr(a.loginTime)   + '</td>'
+      + '<td class="col-login">' + naStr(a.activeTime)  + '</td>'
+      + '<td class="col-login">' + tagUtil(a.utilized)  + '</td>'
+      + '<td class="col-chat">'  + naStr(a.chatAHT)     + '</td>'
+      + '<td>'                   + na(a.fulfByResp)      + '</td>'
+      + '</tr>';
+  }
+
+  list.forEach(function(a){ tbody.innerHTML += row(a, false); });
+  tbody.innerHTML += row(TEAM, true);
+}
+
+// ─── Agent cards ──────────────────────────────────────────────────────────────
+function renderCards() {
+  var list = getActive();
+  var grid = document.getElementById('agent-cards-grid');
+  if (!list.length) { grid.innerHTML = ''; return; }
+
+  function sv(label, val, cls) {
+    return '<div class="stat-item">'
+      + '<div class="stat-label">' + label + '</div>'
+      + '<div class="stat-value' + (cls ? ' ' + cls : '') + '">'
+      + (val != null ? val : '<span class="na">N/A</span>') + '</div></div>';
+  }
+  function svPct(label, v, good, warn) {
+    var val = v != null ? v.toFixed(2) + '%' : null;
+    var cls = v != null ? (v >= good ? 'good' : v >= warn ? 'warn' : 'bad') : '';
+    return sv(label, val, cls);
+  }
+
+  grid.innerHTML = list.map(function(a, i) {
+    var color    = COLORS[i % COLORS.length];
+    var initials = a.name.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
+    var utilCls  = a.utilized != null ? (a.utilized >= 90 ? 'good' : a.utilized >= 80 ? 'warn' : 'bad') : '';
+    return '<div class="agent-card">'
+      + '<div class="agent-header" style="background:' + color + '">'
+      +   '<div class="agent-avatar">' + initials + '</div>'
+      +   '<div><div class="agent-name">' + a.name + '</div>'
+      +   '<div class="agent-sub">' + (a.newAgent ? 'New Agent • Joined Jun 2026' : 'Follows Team • ' + a.days + ' days worked') + '</div>'
+      +   '</div></div>'
+      + '<div class="agent-stats">'
+      + svPct('MTD FCR %',      a.fcr,  70, 50)
+      + svPct('MTD QA',         a.qa,   95, 90)
+      + sv('CSAT',              a.csat != null ? a.csat.toFixed(2) + '%' : null)
+      + sv('Customers / Day',   a.cxPerDay)
+      + sv('Handle / Customer', a.handlePerCust)
+      + sv('Avg Daily Handle',  a.handleTime)
+      + sv('Login Utilized',    a.utilized != null ? a.utilized + '%' : null, utilCls)
+      + sv('Active Time',       a.activeTime)
+      + sv('Chat AHT',          a.chatAHT)
+      + sv('Total Fulfilled',   a.fulfilled)
+      + sv('No Reply Needed',   a.noReply)
+      + sv('Fulfilled by Resp', a.fulfByResp)
+      + '</div></div>';
+  }).join('');
+}
+
+// ─── Render all ───────────────────────────────────────────────────────────────
+function render() {
+  renderKpi();
+  renderCharts();
+  renderTable();
+  renderCards();
+}
+</script>
+</body>
+</html>
