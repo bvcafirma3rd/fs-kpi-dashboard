@@ -580,7 +580,7 @@ function renderTable() {
   function row(a, isTeam) {
     var cls = isTeam ? ' class="avg-row"' : '';
     return '<tr' + cls + '>'
-      + '<td>' + a.name + '</td>'
+      + '<td>' + (isTeam ? 'Team Avg' : a.name) + '</td>'
       + '<td>' + na(a.workedHrs) + '</td>'
       + '<td>' + na(a.days) + '</td>'
       + '<td>' + na(a.fulfilled) + '</td>'
@@ -655,6 +655,4 @@ function render() {
   renderTable();
   renderCards();
 }
-</script>
-</body>
-</html>
+</
