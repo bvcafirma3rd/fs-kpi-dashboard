@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Support Team KPI Dashboard</title>
+  <title>Follows Support Team KPI Dashboard</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <style>
     :root {
@@ -12,6 +12,7 @@
       --green:    #057a55;
       --red:      #c81e1e;
       --yellow:   #92400e;
+      --orange:   #b45309;
       --bg:       #f3f4f6;
       --surface:  #ffffff;
       --border:   #e5e7eb;
@@ -22,6 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: .92rem; }
 
+    /* ── Top bar ── */
     .top-bar {
       background: linear-gradient(135deg, var(--brand-dk) 0%, var(--brand) 100%);
       color: #fff; padding: 18px 32px;
@@ -29,7 +31,6 @@
     }
     .top-bar h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.02em; }
     .top-bar .meta { font-size: .78rem; opacity: .85; display: flex; gap: 16px; flex-wrap: wrap; }
-    .top-bar .meta span { display: flex; align-items: center; gap: 4px; }
     .snapshot-badge {
       display: inline-flex; align-items: center; gap: 5px;
       background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3);
@@ -44,6 +45,7 @@
     .month-tab:hover { background: rgba(255,255,255,.28); }
     .month-tab.active { background: rgba(255,255,255,.92); color: var(--brand-dk); font-weight: 700; border-color: transparent; }
 
+    /* ── Filter bar ── */
     .agent-filter-bar {
       display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
       padding: 10px 32px; background: #f0f4ff; border-bottom: 1px solid var(--border);
@@ -58,12 +60,15 @@
     .agent-chip input { cursor: pointer; accent-color: var(--brand); }
     .agent-chip.active { background: #eff6ff; border-color: var(--brand); color: var(--brand); }
 
+    /* ── Sections ── */
     .section { padding: 20px 32px; }
     .section-title {
       font-size: .78rem; font-weight: 700; text-transform: uppercase;
       letter-spacing: .06em; color: var(--muted); margin-bottom: 14px;
     }
+    .divider { height: 1px; background: var(--border); margin: 0 32px; }
 
+    /* ── KPI cards ── */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
     .kpi-card {
       background: var(--surface); border-radius: var(--radius);
@@ -74,9 +79,13 @@
     .kpi-card .value { font-size: 1.3rem; font-weight: 700; color: var(--text); }
     .kpi-card .sub { font-size: .68rem; color: var(--muted); }
     .kpi-card.good  .value { color: var(--green); }
-    .kpi-card.warn  .value { color: var(--yellow); }
+    .kpi-card.warn  .value { color: var(--orange); }
     .kpi-card.bad   .value { color: var(--red); }
+    .kpi-card.fcr-card { border-top: 3px solid #f59e0b; }
+    .kpi-card.qa-card  { border-top: 3px solid var(--green); }
+    .kpi-card.csat-card{ border-top: 3px solid #3b82f6; }
 
+    /* ── Charts ── */
     .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     .chart-card {
       background: var(--surface); border-radius: var(--radius);
@@ -88,25 +97,51 @@
     }
     .chart-card canvas { max-height: 180px; }
 
+    /* ── Full metrics table ── */
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: .82rem; }
-    thead th {
+    table { width: 100%; border-collapse: collapse; font-size: .80rem; }
+
+    /* Group header row */
+    thead tr.group-row th {
+      background: #1a56db; color: #fff;
+      padding: 6px 10px; text-align: center;
+      font-size: .70rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+      border: 1px solid #1240a8;
+    }
+    thead tr.group-row th.grp-basic  { background: #374151; }
+    thead tr.group-row th.grp-mtd    { background: #065f46; }
+    thead tr.group-row th.grp-daily  { background: #1e40af; }
+    thead tr.group-row th.grp-login  { background: #4338ca; }
+    thead tr.group-row th.grp-chat   { background: #7c3aed; }
+    thead tr.group-row th.grp-other  { background: #374151; }
+
+    /* Sub-header row */
+    thead tr.sub-row th {
       background: #f9fafb; border-bottom: 2px solid var(--border);
-      padding: 8px 12px; text-align: left; font-size: .70rem;
+      border-right: 1px solid var(--border);
+      padding: 7px 10px; text-align: left; font-size: .68rem;
       font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted);
       white-space: nowrap;
     }
+
     tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
     tbody tr:hover { background: #f9fafb; }
-    tbody td { padding: 10px 12px; white-space: nowrap; }
+    tbody td { padding: 9px 10px; white-space: nowrap; border-right: 1px solid #f0f0f0; }
     tbody td:first-child { font-weight: 600; }
-    .tag-good   { color: var(--green); font-weight: 600; }
-    .tag-warn   { color: var(--yellow); font-weight: 600; }
-    .tag-bad    { color: var(--red);   font-weight: 600; }
-    .tag-na     { color: var(--muted); font-style: italic; }
+    .tag-good   { color: var(--green);  font-weight: 600; }
+    .tag-warn   { color: var(--orange); font-weight: 600; }
+    .tag-bad    { color: var(--red);    font-weight: 600; }
+    .tag-na     { color: var(--muted);  font-style: italic; }
     .avg-row td { background: #f0f4ff; font-weight: 600; }
 
-    .agent-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    /* column-group color bands on data cells */
+    td.col-mtd   { background: rgba(5,122,85,.04); }
+    td.col-daily { background: rgba(26,86,219,.04); }
+    td.col-login { background: rgba(67,56,202,.04); }
+    td.col-chat  { background: rgba(124,58,237,.04); }
+
+    /* ── Agent cards ── */
+    .agent-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     .agent-card {
       background: var(--surface); border-radius: var(--radius);
       border: 1px solid var(--border); overflow: hidden;
@@ -126,23 +161,31 @@
     .stat-item .stat-value { font-size: .92rem; font-weight: 700; margin-top: 2px; }
     .stat-item .stat-value.good { color: var(--green); }
     .stat-item .stat-value.bad  { color: var(--red); }
-    .stat-item .stat-value.warn { color: var(--yellow); }
+    .stat-item .stat-value.warn { color: var(--orange); }
+    .stat-item .stat-value.na   { color: var(--muted); font-style: italic; font-weight: 400; }
 
+    /* ── Footer ── */
     .footer {
       text-align: center; padding: 16px 32px; font-size: .72rem; color: var(--muted);
       border-top: 1px solid var(--border); background: var(--surface);
     }
-    .divider { height: 1px; background: var(--border); margin: 0 32px; }
+
+    /* ── Note banner for older months ── */
+    .data-note {
+      background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;
+      padding: 8px 14px; font-size: .78rem; color: #92400e;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 6px;
+    }
   </style>
 </head>
 <body>
 
 <div class="top-bar">
   <div>
-    <h1>Support Team KPI Dashboard</h1>
+    <h1>&#127942; Follows Support Team KPI Dashboard</h1>
     <div class="meta">
-      <span>&#128101; Follows Team &nbsp;Â·&nbsp; <span id="display-range"></span></span>
-      <span>&#128197; Snapshot updated <span id="display-updated"></span></span>
+      <span>&#128101; Follows Team &nbsp;&middot;&nbsp; <span id="display-range"></span></span>
+      <span>&#128197; Period end: <span id="display-updated"></span></span>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -163,6 +206,13 @@
   <div id="agent-chips" style="display:inline-flex;flex-wrap:wrap;gap:8px;"></div>
 </div>
 
+<!-- Data note for older months -->
+<div class="section" id="data-note-section" style="padding-bottom:0;display:none;">
+  <div class="data-note">
+    &#9432; FCR, CSAT, No Reply Needed and Chat AHT columns are only available from July 2026 onward. Older months show N/A for those fields.
+  </div>
+</div>
+
 <div class="section">
   <div class="section-title">Team Summary</div>
   <div class="kpi-grid" id="kpi-grid"></div>
@@ -180,20 +230,30 @@
 <div class="section">
   <div class="section-title">Full Metrics Table</div>
   <div class="table-wrap">
-    <table>
+    <table id="metrics-table">
       <thead>
-        <tr>
-          <th>Agent</th>
-          <th>QA Score</th>
-          <th>Avg Cx / Day</th>
-          <th>AHT (mm:ss)</th>
-          <th>Chat AHT (mm:ss)</th>
-          <th>Login Utilized</th>
-          <th>Avg Login</th>
-          <th>Resp / Day</th>
-          <th>Total Convs</th>
-          <th>Away Time</th>
-          <th>Away Occ</th>
+        <tr class="group-row">
+          <th class="grp-basic" rowspan="2">Agent</th>
+          <th class="grp-basic" rowspan="2">Worked<br>Hrs</th>
+          <th class="grp-basic" rowspan="2">Days<br>Worked</th>
+          <th class="grp-basic" rowspan="2">Total<br>Fulfilled</th>
+          <th class="grp-basic" rowspan="2">No Reply<br>Needed</th>
+          <th class="grp-mtd"   colspan="3">MTD</th>
+          <th class="grp-daily" colspan="3">Daily Averages</th>
+          <th class="grp-login" colspan="3">Daily Logged In</th>
+          <th class="grp-chat"  rowspan="2">Chat AHT<br>(mm:ss)</th>
+          <th class="grp-other" rowspan="2">Fulfilled<br>by Resp</th>
+        </tr>
+        <tr class="sub-row">
+          <th>FCR %</th>
+          <th>QA</th>
+          <th>CSAT</th>
+          <th>Cx / Day</th>
+          <th>Avg Daily<br>Handle (h:mm)</th>
+          <th>Handle /<br>Customer (mm:ss)</th>
+          <th>Login Time</th>
+          <th>Avg Daily<br>Active Time</th>
+          <th>Login<br>Utilized</th>
         </tr>
       </thead>
       <tbody id="table-body"></tbody>
@@ -209,95 +269,199 @@
 </div>
 
 <div class="footer">
-  Support Team KPI Dashboard &bull; Data from Adly &ndash; Gladly Agent Reporting (private) &bull; May &ndash; July 2026
+  Follows Support Team KPI Dashboard &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; May &ndash; July 2026
 </div>
 
 <script>
-// âââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function minToMmSs(min) {
-  var m = Math.floor(min);
-  var s = Math.round((min - m) * 60);
-  return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-}
-function hrsToHMm(hrs) {
-  var h = Math.floor(hrs);
-  var m = Math.round((hrs - h) * 60);
-  return h + ':' + (m < 10 ? '0' : '') + m;
-}
+// ─── Datasets ──────────────────────────────────────────────────────────────
+// Fields per agent:
+//   name, workedHrs, days, fulfilled, noReply, fcr (number), qa (number),
+//   csat (number|null), cxPerDay, handleTime (h:mm str), handlePerCust (mm:ss str),
+//   loginTime (h:mm str), activeTime (h:mm str), utilized (number),
+//   chatAHT (mm:ss str|null), fulfByResp (number|null), newAgent (bool)
 
-// âââ Embedded datasets âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 var DATASETS = {
   may: {
     startISO: '2026-05-01', endISO: '2026-05-31',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 23, respPerDay: 137.7, convs: 755, ahtMin: 7, cxPerDay: 32.8, cxPerHr: 4, loginUtil: 89.71, loginHrs: 7.31, awayTime: 50, awayOcc: 4, chatMin: 61, qaScore: 89.80 },
-      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 133.6, convs: 894, ahtMin: 8, cxPerDay: 44.7, cxPerHr: 6, loginUtil: 90.52, loginHrs: 7.48, awayTime: 50, awayOcc: 4, chatMin: 69, qaScore: 89.80 },
-      { name: 'Jessica Iba\xf1ez',   days: 0,  respPerDay: 0,     convs: 0,   ahtMin: 0, cxPerDay: 0,    cxPerHr: 0, loginUtil: 0,     loginHrs: 0,    awayTime: 0,  awayOcc: null, chatMin: 0,  qaScore: null, newAgent: true },
+      {
+        name: 'Geal Ann Lorico',
+        workedHrs: 168, days: 23, fulfilled: 755, noReply: null,
+        fcr: null, qa: 89.80, csat: null,
+        cxPerDay: 32.8, handleTime: '3:50', handlePerCust: '07:00',
+        loginTime: '7:19', activeTime: '6:33', utilized: 89.71,
+        chatAHT: null, fulfByResp: null
+      },
+      {
+        name: 'Roynalyn Malcampo',
+        workedHrs: 150, days: 20, fulfilled: 894, noReply: null,
+        fcr: null, qa: 89.80, csat: null,
+        cxPerDay: 44.7, handleTime: '5:58', handlePerCust: '08:00',
+        loginTime: '7:29', activeTime: '6:46', utilized: 90.52,
+        chatAHT: null, fulfByResp: null
+      },
+      {
+        name: 'Jessica Iba\xf1ez',
+        workedHrs: null, days: null, fulfilled: null, noReply: null,
+        fcr: null, qa: null, csat: null,
+        cxPerDay: null, handleTime: null, handlePerCust: null,
+        loginTime: null, activeTime: null, utilized: null,
+        chatAHT: null, fulfByResp: null, newAgent: true
+      }
     ],
-    team: { respPerDay: 136, convs: 825, ahtMin: 7, cxPerDay: 39, loginUtil: 90.12, loginHrs: 7.40, chatMin: 65.14, qaScore: 89.80 }
+    team: {
+      workedHrs: 159, days: 21.5, fulfilled: 825, noReply: null,
+      fcr: null, qa: 89.80, csat: null,
+      cxPerDay: 39, handleTime: '4:33', handlePerCust: '07:00',
+      loginTime: '7:24', activeTime: '6:40', utilized: 90.12,
+      chatAHT: null, fulfByResp: null
+    }
   },
+
   june: {
     startISO: '2026-06-01', endISO: '2026-06-30',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 20, respPerDay: 23,  convs: 474, ahtMin: 5.82, cxPerDay: 23,  cxPerHr: 2.84, loginUtil: 89.26, loginHrs: 8.09, awayTime: 52, awayOcc: 3, chatMin: 40, qaScore: 98.04 },
-      { name: 'Roynalyn Malcampo', days: 20, respPerDay: 34,  convs: 704, ahtMin: 5.97, cxPerDay: 34,  cxPerHr: 4.16, loginUtil: 90.99, loginHrs: 8.18, awayTime: 44, awayOcc: 3, chatMin: 70, qaScore: 96.98 },
-      { name: 'Jessica Iba\xf1ez',   days: 26, respPerDay: 5.4, convs: 141, ahtMin: 8.55, cxPerDay: 5.4, cxPerHr: 3.59, loginUtil: 97.64, loginHrs: 1.51, awayTime: 2,  awayOcc: null, chatMin: 0,  qaScore: 91.2, newAgent: true },
+      {
+        name: 'Geal Ann Lorico',
+        workedHrs: 162, days: 20, fulfilled: 474, noReply: null,
+        fcr: null, qa: 98.04, csat: null,
+        cxPerDay: 23, handleTime: '2:14', handlePerCust: '05:49',
+        loginTime: '8:05', activeTime: '7:13', utilized: 89.26,
+        chatAHT: null, fulfByResp: null
+      },
+      {
+        name: 'Roynalyn Malcampo',
+        workedHrs: 164, days: 20, fulfilled: 704, noReply: null,
+        fcr: null, qa: 96.98, csat: null,
+        cxPerDay: 34, handleTime: '3:23', handlePerCust: '05:58',
+        loginTime: '8:11', activeTime: '7:27', utilized: 90.99,
+        chatAHT: null, fulfByResp: null
+      },
+      {
+        name: 'Jessica Iba\xf1ez',
+        workedHrs: null, days: null, fulfilled: 141, noReply: null,
+        fcr: null, qa: 91.20, csat: null,
+        cxPerDay: 5.4, handleTime: null, handlePerCust: null,
+        loginTime: null, activeTime: null, utilized: 97.64,
+        chatAHT: null, fulfByResp: null, newAgent: true
+      }
     ],
-    team: { respPerDay: 28.5, convs: 589, ahtMin: 5.90, cxPerDay: 28.5, loginUtil: 90.13, loginHrs: 8.14, chatMin: 55, qaScore: 97.51 }
+    team: {
+      workedHrs: 163, days: 20, fulfilled: 589, noReply: null,
+      fcr: null, qa: 97.51, csat: null,
+      cxPerDay: 28.5, handleTime: '2:48', handlePerCust: '05:54',
+      loginTime: '8:08', activeTime: '7:20', utilized: 90.13,
+      chatAHT: null, fulfByResp: null
+    }
   },
+
   july: {
     startISO: '2026-07-01', endISO: '2026-07-10',
     agents: [
-      { name: 'Geal Ann Lorico',   days: 3.1, respPerDay: 37,   convs: 116, ahtMin: 4.83, cxPerDay: 37,   cxPerHr: 4.64, loginUtil: 90.34, loginHrs: 8.16, awayTime: 47, awayOcc: 3, chatMin: 52.7, qaScore: 98.21 },
-      { name: 'Roynalyn Malcampo', days: 3.1, respPerDay: 42,   convs: 129, ahtMin: 5.10, cxPerDay: 42,   cxPerHr: 5.16, loginUtil: 91.14, loginHrs: 8.18, awayTime: 44, awayOcc: 2, chatMin: 76,   qaScore: 100.00 },
-      { name: 'Jessica Iba\xf1ez',   days: 1.8, respPerDay: 36.2, convs: 64,  ahtMin: 8.55, cxPerDay: 36.2, cxPerHr: 4.53, loginUtil: 98.4,  loginHrs: 8.13, awayTime: 8,  awayOcc: 2, chatMin: 0,    qaScore: null, newAgent: true },
+      {
+        name: 'Geal Ann Lorico',
+        workedHrs: 25, days: 3.1, fulfilled: 116, noReply: 6,
+        fcr: 44.57, qa: 98.21, csat: null,
+        cxPerDay: 37, handleTime: '3:15', handlePerCust: '05:14',
+        loginTime: '8:09', activeTime: '7:22', utilized: 90,
+        chatAHT: '12:42', fulfByResp: 110
+      },
+      {
+        name: 'Jessica Iba\xf1ez',
+        workedHrs: 14, days: 1.8, fulfilled: 64, noReply: 10,
+        fcr: 66.51, qa: null, csat: null,
+        cxPerDay: 36, handleTime: '3:52', handlePerCust: '06:25',
+        loginTime: '8:07', activeTime: '7:59', utilized: 98,
+        chatAHT: '00:00', fulfByResp: 54, newAgent: true
+      },
+      {
+        name: 'Roynalyn Malcampo',
+        workedHrs: 25, days: 3.1, fulfilled: 129, noReply: 20,
+        fcr: 59.82, qa: 100.00, csat: null,
+        cxPerDay: 42, handleTime: '4:00', handlePerCust: '05:43',
+        loginTime: '8:10', activeTime: '7:27', utilized: 91,
+        chatAHT: '24:54', fulfByResp: 109
+      }
     ],
-    team: { respPerDay: 39.5, convs: 122.5, ahtMin: 4.97, cxPerDay: 39.5, loginUtil: 90.74, loginHrs: 8.17, chatMin: 64.53, qaScore: 99.11 }
+    team: {
+      workedHrs: 21, days: 2.6, fulfilled: 103, noReply: 12,
+      fcr: 56.97, qa: 99.11, csat: null,
+      cxPerDay: 39, handleTime: '3:42', handlePerCust: '05:47',
+      loginTime: '8:09', activeTime: '7:36', utilized: 93.29,
+      chatAHT: '12:32', fulfByResp: null
+    }
   }
 };
 
-// âââ Date & dataset selection ââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Month selection ────────────────────────────────────────────────────────
+function getDatesFromURL() {
+  var params = new URLSearchParams(window.location.search);
+  var m = params.get('month');
+  if (m === 'may')  return { key: 'may' };
+  if (m === 'june') return { key: 'june' };
+  return { key: 'july' };
+}
+function switchMonth(key) {
+  window.location.href = window.location.pathname + '?month=' + key;
+}
 function fmtDate(iso) {
   var d = new Date(iso + 'T00:00:00');
   return (d.getMonth()+1) + '/' + d.getDate() + '/' + d.getFullYear();
 }
 
-function getDatesFromURL() {
-  var params = new URLSearchParams(window.location.search);
-  var m = params.get('month');
-  if (m === 'may') {
-    return { start: DATASETS.may.startISO, end: DATASETS.may.endISO, key: 'may' };
-  }
-  if (m === 'june') {
-    return { start: DATASETS.june.startISO, end: DATASETS.june.endISO, key: 'june' };
-  }
-  return { start: DATASETS.july.startISO, end: DATASETS.july.endISO, key: 'july' };
+var _sel     = getDatesFromURL();
+var DATASET  = DATASETS[_sel.key];
+var AGENTS   = DATASET.agents;
+var TEAM     = DATASET.team;
+var RANGE    = fmtDate(DATASET.startISO) + ' – ' + fmtDate(DATASET.endISO);
+
+// ─── State ──────────────────────────────────────────────────────────────────
+var active = AGENTS.map(function(a){ return a.name; });
+var charts = [];
+
+const COLORS = ['#1a56db', '#7c3aed', '#057a55'];
+
+// ─── Helpers ────────────────────────────────────────────────────────────────
+function na(v, suffix, decimals) {
+  if (v == null) return '<span class="tag-na">N/A</span>';
+  var s = (decimals != null ? v.toFixed(decimals) : v) + (suffix || '');
+  return s;
+}
+function naStr(v) {
+  if (v == null) return '<span class="tag-na">N/A</span>';
+  return v;
+}
+function tagPct(v, good, warn, suffix) {
+  if (v == null) return '<span class="tag-na">N/A</span>';
+  var s = v.toFixed(2) + (suffix || '%');
+  var cls = v >= good ? 'tag-good' : v >= warn ? 'tag-warn' : 'tag-bad';
+  return '<span class="' + cls + '">' + s + '</span>';
+}
+function tagUtil(v) {
+  if (v == null) return '<span class="tag-na">N/A</span>';
+  var cls = v >= 90 ? 'tag-good' : v >= 80 ? 'tag-warn' : 'tag-bad';
+  return '<span class="' + cls + '">' + v + '%</span>';
+}
+function tagFCR(v) {
+  if (v == null) return '<span class="tag-na">N/A</span>';
+  var cls = v >= 70 ? 'tag-good' : v >= 50 ? 'tag-warn' : 'tag-bad';
+  return '<span class="' + cls + '">' + v.toFixed(2) + '%</span>';
 }
 
-function switchMonth(key) {
-  window.location.href = window.location.pathname + '?month=' + key;
-}
-
-var _dates        = getDatesFromURL();
-var DATASET       = DATASETS[_dates.key];
-var AGENTS        = DATASET.agents;
-var TEAM          = DATASET.team;
-var SNAPSHOT_DATE = fmtDate(_dates.start) + ' â ' + fmtDate(_dates.end);
-var UPDATED_AT    = _dates.end;
-
-// Wire up all event listeners (no inline onclick/onchange \u2014 blocked by CSP on GitHub Pages)
+// ─── DOMContentLoaded ───────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('display-range').textContent   = SNAPSHOT_DATE;
-  document.getElementById('display-updated').textContent = fmtDate(UPDATED_AT);
+  document.getElementById('display-range').textContent   = RANGE;
+  document.getElementById('display-updated').textContent = fmtDate(DATASET.endISO);
+  document.getElementById('tab-' + _sel.key).classList.add('active');
 
-  // Highlight active month tab
-  document.getElementById('tab-' + _dates.key).classList.add('active');
+  // Show note banner for months without full data
+  if (_sel.key === 'may' || _sel.key === 'june') {
+    document.getElementById('data-note-section').style.display = '';
+  }
 
-  // Wire month tab buttons
   document.querySelectorAll('.month-tab').forEach(function(btn) {
     btn.addEventListener('click', function() { switchMonth(this.dataset.month); });
   });
-
   document.getElementById('filter-all').addEventListener('change', function() {
     toggleAll(this.checked);
   });
@@ -305,13 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
   render();
 });
 
-const COLORS = ['#1a56db', '#057a55', '#7c3aed'];
-
-// âââ State ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-let active = AGENTS.map(a => a.name);
-let charts = [];
-
-// âââ Agent filter ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Agent filter ────────────────────────────────────────────────────────────
 function initFilter() {
   var box = document.getElementById('agent-chips');
   box.innerHTML = '';
@@ -328,14 +486,14 @@ function initFilter() {
   });
 }
 function toggleAll(checked) {
-  document.querySelectorAll('#agent-chips input').forEach(cb => cb.checked = checked);
-  document.querySelectorAll('#agent-chips label, #chip-all').forEach(l => l.classList.toggle('active', checked));
-  active = checked ? AGENTS.map(a => a.name) : [];
+  document.querySelectorAll('#agent-chips input').forEach(function(cb){ cb.checked = checked; });
+  document.querySelectorAll('#agent-chips label, #chip-all').forEach(function(l){ l.classList.toggle('active', checked); });
+  active = checked ? AGENTS.map(function(a){ return a.name; }) : [];
   render();
 }
 function applyFilter() {
-  active = [...document.querySelectorAll('#agent-chips input:checked')].map(cb => cb.value);
-  document.querySelectorAll('#agent-chips label').forEach(l => {
+  active = Array.from(document.querySelectorAll('#agent-chips input:checked')).map(function(cb){ return cb.value; });
+  document.querySelectorAll('#agent-chips label').forEach(function(l) {
     l.classList.toggle('active', l.querySelector('input').checked);
   });
   var all = active.length === AGENTS.length;
@@ -343,176 +501,40 @@ function applyFilter() {
   document.getElementById('chip-all').classList.toggle('active', all);
   render();
 }
-function getActive() { return AGENTS.filter(a => active.includes(a.name)); }
+function getActive() { return AGENTS.filter(function(a){ return active.includes(a.name); }); }
 
-// âââ Helpers âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function tagged(v, good, warn, suffix) {
-  if (v === null || v === undefined) return '<span class="tag-na">N/A</span>';
-  var cls = v >= good ? 'tag-good' : v >= warn ? 'tag-warn' : 'tag-bad';
-  return '<span class="' + cls + '">' + v + (suffix || '') + '</span>';
-}
-
-// âââ KPI summary cards âââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── KPI Summary Cards ───────────────────────────────────────────────────────
 function renderKpi() {
-  var el = document.getElementById('kpi-grid');
+  var el   = document.getElementById('kpi-grid');
   var list = getActive();
   if (!list.length) { el.innerHTML = '<p style="color:var(--muted)">No agents selected.</p>'; return; }
 
-  var avgCx    = list.reduce(function(s,a){ return s + a.cxPerDay; }, 0) / list.length;
-  var totConvs = list.reduce(function(s,a){ return s + a.convs; }, 0);
-
+  var T = TEAM;
   var cards = [
-    { label: 'Team QA Score',  val: TEAM.qaScore + '%',               cls: TEAM.qaScore >= 95 ? 'good' : TEAM.qaScore >= 90 ? '' : 'warn' },
-    { label: 'Avg Cx / Day',   val: Math.round(avgCx).toString(),    cls: '' },
-    { label: 'AHT (mm:ss)',    val: minToMmSs(TEAM.ahtMin),          cls: 'warn' },
-    { label: 'Chat AHT (mm:ss)', val: minToMmSs(TEAM.chatMin),         cls: '' },
-    { label: 'Login Utilized', val: TEAM.loginUtil + '%',             cls: TEAM.loginUtil >= 90 ? 'good' : 'warn' },
-    { label: 'Avg Login',      val: hrsToHMm(TEAM.loginHrs),         cls: '' },
-    { label: 'Total Convs',    val: totConvs.toLocaleString(),        cls: '' },
-    { label: 'Resp / Day',     val: TEAM.respPerDay.toString(),       cls: '' },
+    { label: 'MTD FCR %',          val: T.fcr   != null ? T.fcr.toFixed(2)   + '%' : 'N/A', cls: T.fcr   != null ? (T.fcr   >= 70 ? 'good' : T.fcr   >= 50 ? 'warn' : 'bad') : '', extra: 'fcr-card'  },
+    { label: 'MTD QA Score',       val: T.qa    != null ? T.qa.toFixed(2)    + '%' : 'N/A', cls: T.qa    != null ? (T.qa    >= 95 ? 'good' : T.qa    >= 90 ? ''     : 'warn') : '', extra: 'qa-card'   },
+    { label: 'MTD CSAT',           val: T.csat  != null ? T.csat.toFixed(2)  + '%' : 'N/A', cls: '',                                                                               extra: 'csat-card'  },
+    { label: 'Avg Customers / Day',val: T.cxPerDay != null ? T.cxPerDay.toString() : 'N/A', cls: '' },
+    { label: 'Total Fulfilled',    val: T.fulfilled != null ? T.fulfilled.toLocaleString() : 'N/A', cls: '' },
+    { label: 'Handle / Customer',  val: T.handlePerCust || 'N/A', cls: '' },
+    { label: 'Avg Daily Handle',   val: T.handleTime    || 'N/A', cls: '' },
+    { label: 'Login Utilized',     val: T.utilized != null ? T.utilized + '%' : 'N/A', cls: T.utilized != null ? (T.utilized >= 90 ? 'good' : 'warn') : '' },
+    { label: 'Avg Daily Active',   val: T.activeTime    || 'N/A', cls: '' },
+    { label: 'Chat AHT (mm:ss)',   val: T.chatAHT       || 'N/A', cls: '' },
   ];
 
   el.innerHTML = cards.map(function(c) {
-    return '<div class="kpi-card ' + c.cls + '">'
+    return '<div class="kpi-card ' + c.cls + (c.extra ? ' ' + c.extra : '') + '">'
       + '<div class="label">' + c.label + '</div>'
       + '<div class="value">' + c.val + '</div>'
-      + '<div class="sub">Team avg \xb7 ' + SNAPSHOT_DATE + '</div>'
+      + '<div class="sub">Team avg \xb7 ' + RANGE + '</div>'
       + '</div>';
   }).join('');
 }
 
-// âââ Charts âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+// ─── Charts ───────────────────────────────────────────────────────────────────
 function renderCharts() {
-  charts.forEach(function(c) { c.destroy(); });
+  charts.forEach(function(c){ c.destroy(); });
   charts = [];
   var list = getActive();
-  var grid = document.getElementById('charts-grid');
-  grid.innerHTML = '';
-  if (!list.length) return;
-
-  var labels = list.map(function(a) { return a.name.split(' ')[0]; });
-
-  var defs = [
-    { title: 'QA Score (%)',           data: list.map(function(a){ return a.qaScore; }),    color: '#059669' },
-    { title: 'Avg Customers per Day',  data: list.map(function(a){ return a.cxPerDay; }),   color: '#1a56db' },
-    { title: 'Login Utilized (%)',     data: list.map(function(a){ return a.loginUtil; }),  color: '#057a55' },
-    { title: 'Total Conversations',    data: list.map(function(a){ return a.convs; }),      color: '#7c3aed' },
-    { title: 'Responses per Day',      data: list.map(function(a){ return a.respPerDay; }), color: '#b45309' },
-  ];
-
-  defs.forEach(function(cfg) {
-    var card = document.createElement('div');
-    card.className = 'chart-card';
-    card.innerHTML = '<h3>' + cfg.title + '</h3><canvas></canvas>';
-    grid.appendChild(card);
-    var inst = new Chart(card.querySelector('canvas'), {
-      type: 'bar',
-      data: {
-        labels: labels,
-        datasets: [{ data: cfg.data, backgroundColor: cfg.color + 'bb', borderColor: cfg.color, borderWidth: 1.5, borderRadius: 6 }]
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
-          x: { grid: { display: false } }
-        }
-      }
-    });
-    charts.push(inst);
-  });
-}
-
-// âââ Table ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function renderTable() {
-  var tbody = document.getElementById('table-body');
-  var list  = getActive();
-
-  var rows = list.map(function(a) {
-    var luHtml = tagged(a.loginUtil, 90, 80, '%');
-    var qaHtml = a.qaScore != null ? tagged(a.qaScore, 95, 90, '%') : '<span class="tag-na">N/A</span>';
-    return '<tr>'
-      + '<td>' + a.name + '</td>'
-      + '<td>' + qaHtml + '</td>'
-      + '<td>' + a.cxPerDay + '</td>'
-      + '<td>' + minToMmSs(a.ahtMin) + '</td>'
-      + '<td>' + minToMmSs(a.chatMin) + '</td>'
-      + '<td>' + luHtml + '</td>'
-      + '<td>' + hrsToHMm(a.loginHrs) + '</td>'
-      + '<td>' + a.respPerDay + '</td>'
-      + '<td>' + a.convs.toLocaleString() + '</td>'
-      + '<td>' + (a.awayTime ? a.awayTime + 'm avg' : '\u2014') + '</td>'
-      + '<td>' + (a.awayOcc != null ? a.awayOcc : '\u2014') + '</td>'
-      + '</tr>';
-  });
-
-  rows.push('<tr class="avg-row">'
-    + '<td>Team Avg</td>'
-    + '<td>' + TEAM.qaScore + '%</td>'
-    + '<td>' + TEAM.cxPerDay + '</td>'
-    + '<td>' + minToMmSs(TEAM.ahtMin) + '</td>'
-    + '<td>' + minToMmSs(TEAM.chatMin) + '</td>'
-    + '<td>' + TEAM.loginUtil + '%</td>'
-    + '<td>' + hrsToHMm(TEAM.loginHrs) + '</td>'
-    + '<td>' + TEAM.respPerDay + '</td>'
-    + '<td>' + TEAM.convs.toLocaleString() + '</td>'
-    + '<td>\u2014</td>'
-    + '<td>\u2014</td>'
-    + '</tr>');
-
-  tbody.innerHTML = rows.join('');
-}
-
-// âââ Agent cards âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function renderCards() {
-  var el   = document.getElementById('agent-cards-grid');
-  var list = getActive();
-
-  el.innerHTML = list.map(function(a, i) {
-    var initials = a.name.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
-    var color    = COLORS[i % COLORS.length];
-    var luC      = a.loginUtil >= 90 ? 'good' : a.loginUtil >= 80 ? '' : 'bad';
-
-    var qaC = a.qaScore == null ? '' : (a.qaScore >= 95 ? 'good' : a.qaScore >= 90 ? '' : 'bad');
-    var qaVal = a.qaScore != null ? a.qaScore + '%' : 'N/A';
-
-    return '<div class="agent-card">'
-      + '<div class="agent-header" style="background:' + color + '">'
-      + '<div class="agent-avatar">' + initials + '</div>'
-      + '<div><div class="agent-name">' + a.name + '</div>'
-      + '<div class="agent-sub">' + (a.newAgent ? 'New Agent â¢ Joined Jun 2026' : 'Follows Team â¢ ' + a.days + ' days worked') + '</div></div>'
-      + '</div>'
-      + '<div class="agent-stats">'
-      + stat('QA Score',       qaVal, qaC)
-      + stat('Avg Cx / Day',   a.cxPerDay, '')
-      + stat('AHT (mm:ss)',    minToMmSs(a.ahtMin), '')
-      + stat('Chat AHT (mm:ss)', minToMmSs(a.chatMin), '')
-      + stat('Login Utilized', a.loginUtil + '%', luC)
-      + stat('Avg Login',      hrsToHMm(a.loginHrs), '')
-      + stat('Resp / Day',     a.respPerDay, '')
-      + stat('Total Convs',    a.convs.toLocaleString(), '')
-      + stat('Away Time (avg)', a.awayTime ? a.awayTime + ' min' : '\u2014', '')
-      + stat('Away Occ (max)', a.awayOcc != null ? a.awayOcc : '\u2014', '')
-      + '</div></div>';
-  }).join('');
-}
-
-function stat(label, value, cls) {
-  return '<div class="stat-item">'
-    + '<div class="stat-label">' + label + '</div>'
-    + '<div class="stat-value ' + cls + '">' + value + '</div>'
-    + '</div>';
-}
-
-// âââ Render all âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-function render() {
-  renderKpi();
-  renderCharts();
-  renderTable();
-  renderCards();
-}
-
-</script>
-</body>
-</html>
+  var g
