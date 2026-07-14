@@ -273,7 +273,7 @@
 </div>
 
 <script>
-// ─── Datasets ──────────────────────────────────────────────────────────────
+// ─── Datasets ─────────────────────────────────────────────────────────────
 // Fields per agent:
 //   name, workedHrs, days, fulfilled, noReply, fcr (number), qa (number),
 //   csat (number|null), cxPerDay, handleTime (h:mm str), handlePerCust (mm:ss str),
@@ -356,15 +356,15 @@ var DATASETS = {
   },
 
   july: {
-    startISO: '2026-07-01', endISO: '2026-07-10',
+    startISO: '2026-07-01', endISO: '2026-07-14',
     agents: [
       {
         name: 'Geal Ann Lorico',
-        workedHrs: 25, days: 3.1, fulfilled: 116, noReply: 6,
-        fcr: 44.57, qa: 98.21, csat: null,
-        cxPerDay: 37, handleTime: '3:15', handlePerCust: '05:14',
-        loginTime: '8:09', activeTime: '7:22', utilized: 90,
-        chatAHT: '12:42', fulfByResp: 110
+        workedHrs: 65, days: 8.2, fulfilled: 199, noReply: 21,
+        fcr: 39.42, qa: 98.57, csat: null,
+        cxPerDay: 24, handleTime: '2:17', handlePerCust: '04:58',
+        loginTime: '8:09', activeTime: '7:15', utilized: 89.06,
+        chatAHT: '35:46', fulfByResp: 178
       },
       {
         name: 'Jessica Iba\xf1ez',
@@ -376,24 +376,24 @@ var DATASETS = {
       },
       {
         name: 'Roynalyn Malcampo',
-        workedHrs: 25, days: 3.1, fulfilled: 129, noReply: 20,
-        fcr: 59.82, qa: 100.00, csat: null,
-        cxPerDay: 42, handleTime: '4:00', handlePerCust: '05:43',
-        loginTime: '8:10', activeTime: '7:27', utilized: 91,
-        chatAHT: '24:54', fulfByResp: 109
+        workedHrs: 61, days: 7.6, fulfilled: 254, noReply: 47,
+        fcr: 46.87, qa: 90.71, csat: null,
+        cxPerDay: 33, handleTime: '3:38', handlePerCust: '05:46',
+        loginTime: '8:07', activeTime: '7:20', utilized: 90.40,
+        chatAHT: '54:30', fulfByResp: 207
       }
     ],
     team: {
-      workedHrs: 21, days: 2.6, fulfilled: 103, noReply: 12,
-      fcr: 56.97, qa: 99.11, csat: null,
-      cxPerDay: 39, handleTime: '3:42', handlePerCust: '05:47',
-      loginTime: '8:09', activeTime: '7:36', utilized: 93.29,
-      chatAHT: '12:32', fulfByResp: null
+      workedHrs: 63, days: 7.9, fulfilled: 226.5, noReply: 34,
+      fcr: 43.15, qa: 94.64, csat: null,
+      cxPerDay: 28.5, handleTime: '2:58', handlePerCust: '05:22',
+      loginTime: '8:08', activeTime: '7:18', utilized: 89.73,
+      chatAHT: '45:08', fulfByResp: null
     }
   }
 };
 
-// ─── Month selection ────────────────────────────────────────────────────────
+// ─── Month selection ─────────────────────────────────────────────────────────────
 function getDatesFromURL() {
   var params = new URLSearchParams(window.location.search);
   var m = params.get('month');
