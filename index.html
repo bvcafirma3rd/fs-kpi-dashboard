@@ -273,7 +273,7 @@
 </div>
 
 <script>
-// ─── Datasets ─────────────────────────────────────────────────────────────────
+// ─── Datasets ──────────────────────────────────────────────────────────────
 // Fields per agent:
 //   name, workedHrs, days, fulfilled, noReply, fcr (number), qa (number),
 //   csat (number|null), cxPerDay, handleTime (h:mm str), handlePerCust (mm:ss str),
@@ -356,12 +356,12 @@ var DATASETS = {
   },
 
   july: {
-    startISO: '2026-07-01', endISO: '2026-07-21',
+    startISO: '2026-07-01', endISO: '2026-07-24',
     agents: [
       {
         name: 'Geal Ann Lorico',
         workedHrs: 65, days: 8.2, fulfilled: 199, noReply: 3,
-        fcr: 39.42, qa: 97.61, csat: null,
+        fcr: 39.42, qa: 96.96, csat: null,
         cxPerDay: 24, handleTime: '2:17', handlePerCust: '04:58',
         loginTime: '8:09', activeTime: '7:15', utilized: 89.06,
         chatAHT: '35:46', fulfByResp: 196
@@ -369,7 +369,7 @@ var DATASETS = {
       {
         name: 'Jessica Iba\xf1ez',
         workedHrs: 14, days: 1.8, fulfilled: 64, noReply: 10,
-        fcr: 66.51, qa: null, csat: null,
+        fcr: 68.09, qa: null, csat: null,
         cxPerDay: 36, handleTime: '3:52', handlePerCust: '06:25',
         loginTime: '8:07', activeTime: '7:59', utilized: 98,
         chatAHT: '00:00', fulfByResp: 54, newAgent: true
@@ -377,7 +377,7 @@ var DATASETS = {
       {
         name: 'Roynalyn Malcampo',
         workedHrs: 61, days: 7.6, fulfilled: 254, noReply: 6,
-        fcr: 46.87, qa: 94.20, csat: null,
+        fcr: 46.87, qa: 95.13, csat: null,
         cxPerDay: 33, handleTime: '3:38', handlePerCust: '05:46',
         loginTime: '8:07', activeTime: '7:20', utilized: 90.40,
         chatAHT: '54:30', fulfByResp: 248
@@ -385,7 +385,7 @@ var DATASETS = {
     ],
     team: {
       workedHrs: 63, days: 7.9, fulfilled: 226.5, noReply: 4.5,
-      fcr: 43.15, qa: 95.90, csat: null,
+      fcr: 43.15, qa: 96.05, csat: null,
       cxPerDay: 28.5, handleTime: '2:58', handlePerCust: '05:22',
       loginTime: '8:08', activeTime: '7:18', utilized: 89.73,
       chatAHT: '45:08', fulfByResp: null
@@ -415,7 +415,7 @@ var AGENTS   = DATASET.agents;
 var TEAM     = DATASET.team;
 var RANGE    = fmtDate(DATASET.startISO) + ' – ' + fmtDate(DATASET.endISO);
 
-// ─── State ─────────────────────────────────────────────────────────────────
+// ─── State ──────────────────────────────────────────────────────────────────
 var active = AGENTS.map(function(a){ return a.name; });
 var charts = [];
 
@@ -503,7 +503,7 @@ function applyFilter() {
 }
 function getActive() { return AGENTS.filter(function(a){ return active.includes(a.name); }); }
 
-// ─── KPI Summary Cards ───────────────────────────────────────────────────────────────
+// ─── KPI Summary Cards ───────────────────────────────────────────────────────
 function renderKpi() {
   var el   = document.getElementById('kpi-grid');
   var list = getActive();
