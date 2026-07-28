@@ -273,7 +273,7 @@
 </div>
 
 <script>
-// ─── Datasets ─────────────────────────────────────────────────────────
+// ─── Datasets ──────────────────────────────────────────────────────────────
 // Fields per agent:
 //   name, workedHrs, days, fulfilled, noReply, fcr (number), qa (number),
 //   csat (number|null), cxPerDay, handleTime (h:mm str), handlePerCust (mm:ss str),
@@ -338,7 +338,7 @@ var DATASETS = {
         chatAHT: null, fulfByResp: null
       },
       {
-        name: 'Jessica Ia\xf1ez',
+        name: 'Jessica Iba\xf1ez',
         workedHrs: null, days: null, fulfilled: 141, noReply: null,
         fcr: null, qa: 91.20, csat: null,
         cxPerDay: 5.4, handleTime: null, handlePerCust: null,
@@ -356,45 +356,45 @@ var DATASETS = {
   },
 
   july: {
-    startISO: '2026-07-01', endISO: '2026-07-28',
+    startISO: '2026-07-01', endISO: '2026-07-27',
     agents: [
       {
         name: 'Geal Ann Lorico',
-        workedHrs: 114, days: 14.3, fulfilled: 299, noReply: 3,
-        fcr: 42.65, qa: 97.61, csat: null,
-        cxPerDay: 21, handleTime: '2:01', handlePerCust: '05:04',
-        loginTime: '8:17', activeTime: '7:23', utilized: 89.15,
-        chatAHT: '26:52', fulfByResp: 296
+        workedHrs: 140, days: 17.5, fulfilled: 381, noReply: 45,
+        fcr: 43.28, qa: 99.96, csat: null,
+        cxPerDay: 22, handleTime: '1:58', handlePerCust: '05:28',
+        loginTime: '8:15', activeTime: '7:22', utilized: 89,
+        chatAHT: '01:14', fulfByResp: 336
       },
       {
-        name: 'Jessica Ia\xf1ez',
-        workedHrs: 14, days: 1.8, fulfilled: 64, noReply: 10,
+        name: 'Jessica Iba\xf1ez',
+        workedHrs: 40, days: 5.0, fulfilled: 158, noReply: 36,
         fcr: 60.38, qa: null, csat: null,
-        cxPerDay: 36, handleTime: '3:52', handlePerCust: '06:25',
+        cxPerDay: 31, handleTime: '3:52', handlePerCust: '07:24',
         loginTime: '8:07', activeTime: '7:59', utilized: 98,
-        chatAHT: '00:00', fulfByResp: 54, newAgent: true
+        chatAHT: '00:00', fulfByResp: 122, newAgent: true
       },
       {
         name: 'Roynalyn Malcampo',
-        workedHrs: 115, days: 14.4, fulfilled: 419, noReply: 6,
-        fcr: 45.56, qa: 95.13, csat: null,
-        cxPerDay: 29, handleTime: '3:14', handlePerCust: '05:52',
-        loginTime: '8:23', activeTime: '7:37', utilized: 90.95,
-        chatAHT: '41:15', fulfByResp: 413
+        workedHrs: 155, days: 19.4, fulfilled: 555, noReply: 116,
+        fcr: 45.31, qa: 95.13, csat: null,
+        cxPerDay: 29, handleTime: '2:49', handlePerCust: '05:55',
+        loginTime: '8:48', activeTime: '8:01', utilized: 91,
+        chatAHT: '01:43', fulfByResp: 439
       }
     ],
     team: {
-      workedHrs: 114.5, days: 14.35, fulfilled: 359, noReply: 4.5,
-      fcr: 44.11, qa: 96.37, csat: null,
-      cxPerDay: 25, handleTime: '2:38', handlePerCust: '05:28',
-      loginTime: '8:20', activeTime: '7:30', utilized: 90.05,
-      chatAHT: '34:04', fulfByResp: null
+      workedHrs: 112, days: 14.0, fulfilled: 365, noReply: 66,
+      fcr: 49.66, qa: 96.05, csat: null,
+      cxPerDay: 27, handleTime: '2:53', handlePerCust: '06:16',
+      loginTime: '8:23', activeTime: '7:47', utilized: 92.90,
+      chatAHT: '00:59', fulfByResp: null
     }
   }
 };
 
 // ─── Month selection ────────────────────────────────────────────────────────
- function getDatesFromURL() {
+function getDatesFromURL() {
   var params = new URLSearchParams(window.location.search);
   var m = params.get('month');
   if (m === 'may')  return { key: 'may' };
@@ -415,13 +415,13 @@ var AGENTS   = DATASET.agents;
 var TEAM     = DATASET.team;
 var RANGE    = fmtDate(DATASET.startISO) + ' – ' + fmtDate(DATASET.endISO);
 
-// ─── State ─────────────────────────────────────────────────────────────
+// ─── State ──────────────────────────────────────────────────────────────────
 var active = AGENTS.map(function(a){ return a.name; });
 var charts = [];
 
 const COLORS = ['#1a56db', '#7c3aed', '#057a55'];
 
-// ─── Helpers ────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 function na(v, suffix, decimals) {
   if (v == null) return '<span class="tag-na">N/A</span>';
   var s = (decimals != null ? v.toFixed(decimals) : v) + (suffix || '');
@@ -449,7 +449,7 @@ function tagFCR(v) {
 }
 
 // ─── DOMContentLoaded ───────────────────────────────────────────────────────
- document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('display-range').textContent   = RANGE;
   document.getElementById('display-updated').textContent = fmtDate(DATASET.endISO);
   document.getElementById('tab-' + _sel.key).classList.add('active');
