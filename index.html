@@ -23,7 +23,7 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); font-size: .92rem; }
 
-    /* ── Top bar ── */
+    /* ââ Top bar ââ */
     .top-bar {
       background: linear-gradient(135deg, var(--brand-dk) 0%, var(--brand) 100%);
       color: #fff; padding: 18px 32px;
@@ -45,7 +45,7 @@
     .month-tab:hover { background: rgba(255,255,255,.28); }
     .month-tab.active { background: rgba(255,255,255,.92); color: var(--brand-dk); font-weight: 700; border-color: transparent; }
 
-    /* ── Filter bar ── */
+    /* ââ Filter bar ââ */
     .agent-filter-bar {
       display: flex; align-items: center; flex-wrap: wrap; gap: 8px;
       padding: 10px 32px; background: #f0f4ff; border-bottom: 1px solid var(--border);
@@ -60,7 +60,7 @@
     .agent-chip input { cursor: pointer; accent-color: var(--brand); }
     .agent-chip.active { background: #eff6ff; border-color: var(--brand); color: var(--brand); }
 
-    /* ── Sections ── */
+    /* ââ Sections ââ */
     .section { padding: 20px 32px; }
     .section-title {
       font-size: .78rem; font-weight: 700; text-transform: uppercase;
@@ -68,7 +68,7 @@
     }
     .divider { height: 1px; background: var(--border); margin: 0 32px; }
 
-    /* ── KPI cards ── */
+    /* ââ KPI cards ââ */
     .kpi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
     .kpi-card {
       background: var(--surface); border-radius: var(--radius);
@@ -85,7 +85,7 @@
     .kpi-card.qa-card  { border-top: 3px solid var(--green); }
     .kpi-card.csat-card{ border-top: 3px solid #3b82f6; }
 
-    /* ── Charts ── */
+    /* ââ Charts ââ */
     .charts-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     .chart-card {
       background: var(--surface); border-radius: var(--radius);
@@ -97,7 +97,7 @@
     }
     .chart-card canvas { max-height: 180px; }
 
-    /* ── Full metrics table ── */
+    /* ââ Full metrics table ââ */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; font-size: .80rem; }
 
@@ -140,7 +140,7 @@
     td.col-login { background: rgba(67,56,202,.04); }
     td.col-chat  { background: rgba(124,58,237,.04); }
 
-    /* ── Agent cards ── */
+    /* ââ Agent cards ââ */
     .agent-cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
     .agent-card {
       background: var(--surface); border-radius: var(--radius);
@@ -164,13 +164,13 @@
     .stat-item .stat-value.warn { color: var(--orange); }
     .stat-item .stat-value.na   { color: var(--muted); font-style: italic; font-weight: 400; }
 
-    /* ── Footer ── */
+    /* ââ Footer ââ */
     .footer {
       text-align: center; padding: 16px 32px; font-size: .72rem; color: var(--muted);
       border-top: 1px solid var(--border); background: var(--surface);
     }
 
-    /* ── Note banner for older months ── */
+    /* ââ Note banner for older months ââ */
     .data-note {
       background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px;
       padding: 8px 14px; font-size: .78rem; color: #92400e;
@@ -273,7 +273,7 @@
 </div>
 
 <script>
-// ─── Datasets ──────────────────────────────────────────────────────────────
+// âââ Datasets ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // Fields per agent:
 //   name, workedHrs, days, fulfilled, noReply, fcr (number), qa (number),
 //   csat (number|null), cxPerDay, handleTime (h:mm str), handlePerCust (mm:ss str),
@@ -356,21 +356,21 @@ var DATASETS = {
   },
 
   july: {
-    startISO: '2026-07-01', endISO: '2026-07-31',
+    startISO: '2026-07-01', endISO: '2026-07-27',
     agents: [
       {
         name: 'Geal Ann Lorico',
         workedHrs: 140, days: 17.5, fulfilled: 381, noReply: 45,
         fcr: 43.28, qa: 97.24, csat: null,
-        cxPerDay: 22, handleTime: '2:03', handlePerCust: '05:04',
-        loginTime: '8:15', activeTime: '7:22', utilized: 89,
-        chatAHT: '23:38', fulfByResp: 336
+        cxPerDay: 25, handleTime: '2:16', handlePerCust: '05:26',
+        loginTime: '8:05', activeTime: '7:15', utilized: 90,
+        chatAHT: '01:21', fulfByResp: 336
       },
       {
         name: 'Jessica Iba\xf1ez',
         workedHrs: 40, days: 5.0, fulfilled: 158, noReply: 36,
         fcr: 60.38, qa: null, csat: null,
-        cxPerDay: 31, handleTime: '3:52', handlePerCust: '07:24',
+        cxPerDay: 29, handleTime: '4:21', handlePerCust: '09:10',
         loginTime: '8:07', activeTime: '7:59', utilized: 98,
         chatAHT: '00:00', fulfByResp: 122, newAgent: true
       },
@@ -378,22 +378,22 @@ var DATASETS = {
         name: 'Roynalyn Malcampo',
         workedHrs: 155, days: 19.4, fulfilled: 555, noReply: 116,
         fcr: 45.31, qa: 95.76, csat: null,
-        cxPerDay: 29, handleTime: '3:09', handlePerCust: '05:34',
-        loginTime: '8:48', activeTime: '8:01', utilized: 91,
-        chatAHT: '34:32', fulfByResp: 439
+        cxPerDay: 29, handleTime: '2:33', handlePerCust: '05:23',
+        loginTime: '9:31', activeTime: '8:42', utilized: 91,
+        chatAHT: '02:59', fulfByResp: 439
       }
     ],
     team: {
-      workedHrs: 147.5, days: 18.45, fulfilled: 468, noReply: 81,
-      fcr: 44.30, qa: 96.50, csat: null,
-      cxPerDay: 25.5, handleTime: '2:36', handlePerCust: '05:19',
-      loginTime: '8:32', activeTime: '7:42', utilized: 90,
-      chatAHT: '29:05', fulfByResp: null
+      workedHrs: 112, days: 14.0, fulfilled: 365, noReply: 66,
+      fcr: 49.66, qa: 96.50, csat: null,
+      cxPerDay: 27, handleTime: '3:03', handlePerCust: '06:40',
+      loginTime: '8:48', activeTime: '7:58', utilized: 90.52,
+      chatAHT: '01:27', fulfByResp: null
     }
   }
 };
 
-// ─── Month selection ────────────────────────────────────────────────────────
+// âââ Month selection ââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function getDatesFromURL() {
   var params = new URLSearchParams(window.location.search);
   var m = params.get('month');
@@ -413,15 +413,15 @@ var _sel     = getDatesFromURL();
 var DATASET  = DATASETS[_sel.key];
 var AGENTS   = DATASET.agents;
 var TEAM     = DATASET.team;
-var RANGE    = fmtDate(DATASET.startISO) + ' – ' + fmtDate(DATASET.endISO);
+var RANGE    = fmtDate(DATASET.startISO) + ' â ' + fmtDate(DATASET.endISO);
 
-// ─── State ──────────────────────────────────────────────────────────────────
+// âââ State ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 var active = AGENTS.map(function(a){ return a.name; });
 var charts = [];
 
 const COLORS = ['#1a56db', '#7c3aed', '#057a55'];
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// âââ Helpers ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function na(v, suffix, decimals) {
   if (v == null) return '<span class="tag-na">N/A</span>';
   var s = (decimals != null ? v.toFixed(decimals) : v) + (suffix || '');
@@ -448,7 +448,7 @@ function tagFCR(v) {
   return '<span class="' + cls + '">' + v.toFixed(2) + '%</span>';
 }
 
-// ─── DOMContentLoaded ───────────────────────────────────────────────────────
+// âââ DOMContentLoaded âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('display-range').textContent   = RANGE;
   document.getElementById('display-updated').textContent = fmtDate(DATASET.endISO);
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function() {
   render();
 });
 
-// ─── Agent filter ────────────────────────────────────────────────────────────
+// âââ Agent filter ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function initFilter() {
   var box = document.getElementById('agent-chips');
   box.innerHTML = '';
@@ -503,7 +503,7 @@ function applyFilter() {
 }
 function getActive() { return AGENTS.filter(function(a){ return active.includes(a.name); }); }
 
-// ─── KPI Summary Cards ───────────────────────────────────────────────────────
+// âââ KPI Summary Cards âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderKpi() {
   var el   = document.getElementById('kpi-grid');
   var list = getActive();
@@ -532,7 +532,7 @@ function renderKpi() {
   }).join('');
 }
 
-// ─── Charts ───────────────────────────────────────────────────────────────────
+// âââ Charts âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderCharts() {
   charts.forEach(function(c){ c.destroy(); });
   charts = [];
@@ -571,7 +571,7 @@ function renderCharts() {
   mkBar('ch-qa',        'MTD QA Score (%)',   list.map(function(a){ return a.qa; }));
 }
 
-// ─── Full metrics table ───────────────────────────────────────────────────────
+// âââ Full metrics table âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderTable() {
   var list = getActive();
   var tbody = document.getElementById('table-body');
@@ -603,7 +603,7 @@ function renderTable() {
   tbody.innerHTML += row(TEAM, true);
 }
 
-// ─── Agent cards ──────────────────────────────────────────────────────────────
+// âââ Agent cards ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function renderCards() {
   var list = getActive();
   var grid = document.getElementById('agent-cards-grid');
@@ -629,7 +629,7 @@ function renderCards() {
       + '<div class="agent-header" style="background:' + color + '">'
       +   '<div class="agent-avatar">' + initials + '</div>'
       +   '<div><div class="agent-name">' + a.name + '</div>'
-      +   '<div class="agent-sub">' + (a.newAgent ? 'New Agent • Joined Jun 2026' : 'Follows Team • ' + a.days + ' days worked') + '</div>'
+      +   '<div class="agent-sub">' + (a.newAgent ? 'New Agent â¢ Joined Jun 2026' : 'Follows Team â¢ ' + a.days + ' days worked') + '</div>'
       +   '</div></div>'
       + '<div class="agent-stats">'
       + svPct('MTD FCR %',      a.fcr,  70, 50)
@@ -648,7 +648,7 @@ function renderCards() {
   }).join('');
 }
 
-// ─── Render all ───────────────────────────────────────────────────────────────
+// âââ Render all âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function render() {
   renderKpi();
   renderCharts();
