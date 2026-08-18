@@ -394,39 +394,39 @@ var DATASETS = {
   },
 
   august: {
-    startISO: '2026-08-01', endISO: '2026-08-04',
+    startISO: '2026-08-01', endISO: '2026-08-18',
     agents: [
       {
         name: 'Geal Ann Lorico',
-        workedHrs: 16, days: 2.03, fulfilled: 25, noReply: null,
-        fcr: 22.22, qa: null, csat: null,
-        cxPerDay: 12, handleTime: '1:44', handlePerCust: '08:25',
-        loginTime: '8:07', activeTime: null, utilized: 0,
-        chatAHT: null, fulfByResp: null
+        workedHrs: 97, days: 12.1, fulfilled: 178, noReply: 23,
+        fcr: 37.99, qa: 100.00, csat: null,
+        cxPerDay: 15, handleTime: '1:19', handlePerCust: '05:26',
+        loginTime: '8:05', activeTime: '7:16', utilized: 90,
+        chatAHT: '00:41', fulfByResp: 155
       },
       {
         name: 'Jessica Iba\xf1ez',
-        workedHrs: null, days: null, fulfilled: null, noReply: null,
-        fcr: 100.00, qa: null, csat: null,
-        cxPerDay: null, handleTime: null, handlePerCust: null,
+        workedHrs: 20, days: 2.5, fulfilled: 99, noReply: 24,
+        fcr: 64.91, qa: null, csat: null,
+        cxPerDay: 39, handleTime: '5:08', handlePerCust: '07:51',
         loginTime: null, activeTime: null, utilized: null,
-        chatAHT: null, fulfByResp: null, newAgent: true
+        chatAHT: '00:00', fulfByResp: 75, newAgent: true
       },
       {
         name: 'Roynalyn Malcampo',
-        workedHrs: 7, days: 0.91, fulfilled: 19, noReply: null,
-        fcr: null, qa: null, csat: null,
-        cxPerDay: 21, handleTime: '2:06', handlePerCust: '06:00',
-        loginTime: '7:16', activeTime: null, utilized: 0,
-        chatAHT: null, fulfByResp: null
+        workedHrs: 80, days: 10.0, fulfilled: 280, noReply: 68,
+        fcr: 42.59, qa: 97.62, csat: null,
+        cxPerDay: 28, handleTime: '2:35', handlePerCust: '05:33',
+        loginTime: '8:00', activeTime: '7:16', utilized: 91,
+        chatAHT: '01:52', fulfByResp: 212
       }
     ],
     team: {
-      workedHrs: 11.5, days: 1.47, fulfilled: 22, noReply: null,
-      fcr: null, qa: null, csat: null,
-      cxPerDay: 16.5, handleTime: '1:55', handlePerCust: '07:13',
-      loginTime: '7:42', activeTime: null, utilized: 0,
-      chatAHT: null, fulfByResp: null
+      workedHrs: 66, days: 8.2, fulfilled: 186, noReply: 38,
+      fcr: 48.50, qa: 98.81, csat: null,
+      cxPerDay: 27, handleTime: '3:01', handlePerCust: '06:17',
+      loginTime: '8:03', activeTime: '7:16', utilized: 90.23,
+      chatAHT: '00:51', fulfByResp: 148
     }
   }
 };
@@ -610,7 +610,7 @@ function renderCharts() {
   mkBar('ch-qa',        'MTD QA Score (%)',   list.map(function(a){ return a.qa; }));
 }
 
-// ─── Full metrics table ──────────────────────────────────────────────────────
+// ─── Full metrics table ───────────────────────────────────────────────────────
 function renderTable() {
   var list = getActive();
   var tbody = document.getElementById('table-body');
