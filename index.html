@@ -394,20 +394,20 @@ var DATASETS = {
   },
 
   august: {
-    startISO: '2026-08-01', endISO: '2026-08-18',
+    startISO: '2026-08-01', endISO: '2026-08-24',
     agents: [
       {
         name: 'Geal Ann Lorico',
-        workedHrs: 97, days: 12.1, fulfilled: 178, noReply: 23,
-        fcr: 37.99, qa: 100.00, csat: null,
-        cxPerDay: 15, handleTime: '1:19', handlePerCust: '05:26',
-        loginTime: '8:05', activeTime: '7:16', utilized: 90,
-        chatAHT: '00:41', fulfByResp: 155
+        workedHrs: 120, days: 15.05, fulfilled: 484, noReply: null,
+        fcr: 41.57, qa: 100.00, csat: null,
+        cxPerDay: 32, handleTime: '3:09', handlePerCust: '05:53',
+        loginTime: '8:01', activeTime: '7:26', utilized: 92.92,
+        chatAHT: null, fulfByResp: null
       },
       {
         name: 'Jessica Iba\xf1ez',
         workedHrs: 20, days: 2.5, fulfilled: 99, noReply: 24,
-        fcr: 64.91, qa: null, csat: null,
+        fcr: 58.63, qa: null, csat: null,
         cxPerDay: 39, handleTime: '5:08', handlePerCust: '07:51',
         loginTime: null, activeTime: null, utilized: null,
         chatAHT: '00:00', fulfByResp: 75, newAgent: true
@@ -415,18 +415,18 @@ var DATASETS = {
       {
         name: 'Roynalyn Malcampo',
         workedHrs: 80, days: 10.0, fulfilled: 280, noReply: 68,
-        fcr: 42.59, qa: 97.62, csat: null,
+        fcr: 40.87, qa: 97.22, csat: null,
         cxPerDay: 28, handleTime: '2:35', handlePerCust: '05:33',
         loginTime: '8:00', activeTime: '7:16', utilized: 91,
         chatAHT: '01:52', fulfByResp: 212
       }
     ],
     team: {
-      workedHrs: 66, days: 8.2, fulfilled: 186, noReply: 38,
-      fcr: 48.50, qa: 98.81, csat: null,
-      cxPerDay: 27, handleTime: '3:01', handlePerCust: '06:17',
-      loginTime: '8:03', activeTime: '7:16', utilized: 90.23,
-      chatAHT: '00:51', fulfByResp: 148
+      workedHrs: 100, days: 12.53, fulfilled: 382, noReply: null,
+      fcr: 41.22, qa: 98.61, csat: null,
+      cxPerDay: 30, handleTime: '2:52', handlePerCust: '05:43',
+      loginTime: '8:01', activeTime: '7:21', utilized: 91.96,
+      chatAHT: null, fulfByResp: null
     }
   }
 };
@@ -460,7 +460,7 @@ var charts = [];
 
 const COLORS = ['#1a56db', '#7c3aed', '#057a55'];
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────
 function na(v, suffix, decimals) {
   if (v == null) return '<span class="tag-na">N/A</span>';
   var s = (decimals != null ? v.toFixed(decimals) : v) + (suffix || '');
