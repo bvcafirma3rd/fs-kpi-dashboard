@@ -195,6 +195,7 @@
       <button class="month-tab" id="tab-july" data-month="july">July 2026</button>
       <button class="month-tab" id="tab-august" data-month="august">August 2026</button>
       <button class="month-tab" id="tab-september" data-month="september">September 2026</button>
+      <button class="month-tab" id="tab-october" data-month="october">October 2026</button>
     </div>
     <span class="snapshot-badge">&#128248; Static snapshot</span>
   </div>
@@ -271,7 +272,7 @@
 </div>
 
 <div class="footer">
-  Follows Support Team KPI Dashboard &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; May &ndash; September 2026
+  Follows Support Team KPI Dashboard &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; May &ndash; October 2026
 </div>
 
 <script>
@@ -466,6 +467,43 @@ var DATASETS = {
       loginTime: '8:17', activeTime: '7:44', utilized: 93.44,
       chatAHT: '00:49', fulfByResp: 552
     }
+  },
+
+  october: {
+    startISO: '2026-10-01', endISO: '2026-10-06',
+    agents: [
+      {
+        name: 'Geal Ann Lorico',
+        workedHrs: 16, days: 2.1, fulfilled: 39, noReply: 1,
+        fcr: 45.27, qa: null, csat: null,
+        cxPerDay: 19, handleTime: '1:50', handlePerCust: '05:50',
+        loginTime: '8:14', activeTime: '7:00', utilized: 85,
+        chatAHT: '06:38', fulfByResp: 38
+      },
+      {
+        name: 'Jessica Iba\xf1ez',
+        workedHrs: 5, days: 0.6, fulfilled: 33, noReply: 5,
+        fcr: 93.33, qa: null, csat: null,
+        cxPerDay: 53, handleTime: '6:06', handlePerCust: '06:52',
+        loginTime: null, activeTime: null, utilized: null,
+        chatAHT: '00:00', fulfByResp: 28, newAgent: true
+      },
+      {
+        name: 'Roynalyn Malcampo',
+        workedHrs: 21, days: 2.7, fulfilled: 88, noReply: 17,
+        fcr: 45.92, qa: null, csat: null,
+        cxPerDay: 33, handleTime: '3:18', handlePerCust: '06:00',
+        loginTime: '8:05', activeTime: '7:22', utilized: 91,
+        chatAHT: '16:37', fulfByResp: 71
+      }
+    ],
+    team: {
+      workedHrs: 14, days: 1.8, fulfilled: 53, noReply: 8,
+      fcr: 61.50, qa: null, csat: null,
+      cxPerDay: 35, handleTime: '3:45', handlePerCust: '06:14',
+      loginTime: '8:09', activeTime: '7:11', utilized: 88.11,
+      chatAHT: '07:45', fulfByResp: 45
+    }
   }
 };
 
@@ -477,7 +515,8 @@ function getDatesFromURL() {
   if (m === 'june') return { key: 'june' };
   if (m === 'july') return { key: 'july' };
   if (m === 'august') return { key: 'august' };
-  return { key: 'september' };
+  if (m === 'september') return { key: 'september' };
+  return { key: 'october' };
 }
 function switchMonth(key) {
   window.location.href = window.location.pathname + '?month=' + key;
