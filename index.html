@@ -196,6 +196,7 @@
       <button class="month-tab" id="tab-august" data-month="august">August 2026</button>
       <button class="month-tab" id="tab-september" data-month="september">September 2026</button>
       <button class="month-tab" id="tab-october" data-month="october">October 2026</button>
+      <button class="month-tab" id="tab-november" data-month="november">November 2026</button>
     </div>
     <span class="snapshot-badge">&#128248; Static snapshot</span>
   </div>
@@ -272,7 +273,7 @@
 </div>
 
 <div class="footer">
-  Follows Support Team KPI Dashboard &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; May &ndash; October 2026
+  Follows Support Team KPI Dashboard &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; May &ndash; November 2026
 </div>
 
 <script>
@@ -475,7 +476,7 @@ var DATASETS = {
       {
         name: 'Geal Ann Lorico',
         workedHrs: 141, days: 17.6, fulfilled: 318, noReply: 17,
-        fcr: 47.70, qa: 98.57, csat: null,
+        fcr: 47.70, qa: 99.05, csat: null,
         cxPerDay: 17, handleTime: '1:49', handlePerCust: '06:23',
         loginTime: '8:11', activeTime: '7:18', utilized: 89,
         chatAHT: '00:18', fulfByResp: 301
@@ -499,10 +500,47 @@ var DATASETS = {
     ],
     team: {
       workedHrs: 106, days: 13.2, fulfilled: 314, noReply: 44,
-      fcr: 58.00, qa: 97.14, csat: null,
+      fcr: 58.00, qa: 97.38, csat: null,
       cxPerDay: 23, handleTime: '3:19', handlePerCust: '08:09',
       loginTime: '8:12', activeTime: '7:23', utilized: 90,
       chatAHT: '01:08', fulfByResp: 271
+    }
+  },
+
+  november: {
+    startISO: '2026-11-01', endISO: '2026-11-09',
+    agents: [
+      {
+        name: 'Geal Ann Lorico',
+        workedHrs: 49, days: 6.13, fulfilled: 117, noReply: null,
+        fcr: 47.32, qa: 100.00, csat: null,
+        cxPerDay: 19, handleTime: '2:25', handlePerCust: '07:34',
+        loginTime: '8:11', activeTime: '7:26', utilized: 92.92,
+        chatAHT: null, fulfByResp: null
+      },
+      {
+        name: 'Jessica Iba\xf1ez',
+        workedHrs: null, days: null, fulfilled: null, noReply: null,
+        fcr: null, qa: null, csat: null,
+        cxPerDay: null, handleTime: null, handlePerCust: null,
+        loginTime: null, activeTime: null, utilized: null,
+        chatAHT: null, fulfByResp: null, newAgent: true
+      },
+      {
+        name: 'Roynalyn Malcampo',
+        workedHrs: null, days: null, fulfilled: null, noReply: null,
+        fcr: 37.88, qa: 100.00, csat: null,
+        cxPerDay: null, handleTime: null, handlePerCust: null,
+        loginTime: null, activeTime: null, utilized: null,
+        chatAHT: null, fulfByResp: null
+      }
+    ],
+    team: {
+      workedHrs: null, days: null, fulfilled: null, noReply: null,
+      fcr: 42.60, qa: 100.00, csat: null,
+      cxPerDay: null, handleTime: null, handlePerCust: null,
+      loginTime: null, activeTime: null, utilized: null,
+      chatAHT: null, fulfByResp: null
     }
   }
 };
@@ -516,7 +554,8 @@ function getDatesFromURL() {
   if (m === 'july') return { key: 'july' };
   if (m === 'august') return { key: 'august' };
   if (m === 'september') return { key: 'september' };
-  return { key: 'october' };
+  if (m === 'october') return { key: 'october' };
+  return { key: 'november' };
 }
 function switchMonth(key) {
   window.location.href = window.location.pathname + '?month=' + key;
