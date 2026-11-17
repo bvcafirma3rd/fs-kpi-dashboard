@@ -272,6 +272,47 @@
   <div class="agent-cards-grid" id="agent-cards-grid"></div>
 </div>
 
+<div class="divider" id="new-agent-divider"></div>
+
+<div class="section" id="new-agent-section">
+  <div class="section-title" id="new-agent-title">New Agent</div>
+  <div class="data-note" style="margin-bottom:14px;">
+    &#9432; New agents are tracked separately and are not included in the Team Summary, charts or team averages above.
+  </div>
+  <div class="data-note" id="new-agent-empty" style="display:none;">No data recorded for this period yet.</div>
+  <div class="table-wrap" id="new-agent-table-wrap">
+    <table id="new-agent-table">
+      <thead>
+        <tr class="group-row">
+          <th class="grp-basic" rowspan="2">Agent</th>
+          <th class="grp-basic" rowspan="2">Worked<br>Hrs</th>
+          <th class="grp-basic" rowspan="2">Days<br>Worked</th>
+          <th class="grp-basic" rowspan="2">Total<br>Fulfilled</th>
+          <th class="grp-basic" rowspan="2">No Reply<br>Needed</th>
+          <th class="grp-mtd"   colspan="3">MTD</th>
+          <th class="grp-daily" colspan="3">Daily Averages</th>
+          <th class="grp-login" colspan="3">Daily Logged In</th>
+          <th class="grp-chat"  rowspan="2">Chat AHT<br>(mm:ss)</th>
+          <th class="grp-other" rowspan="2">Fulfilled<br>by Resp</th>
+        </tr>
+        <tr class="sub-row">
+          <th>FCR %</th>
+          <th>QA</th>
+          <th>CSAT</th>
+          <th>Cx / Day</th>
+          <th>Avg Daily<br>Handle (h:mm)</th>
+          <th>Handle /<br>Customer (mm:ss)</th>
+          <th>Login Time</th>
+          <th>Avg Daily<br>Active Time</th>
+          <th>Login<br>Utilized</th>
+        </tr>
+      </thead>
+      <tbody id="new-agent-body"></tbody>
+    </table>
+  </div>
+  <div class="agent-cards-grid" id="new-agent-cards" style="margin-top:16px;"></div>
+</div>
+
 <div class="footer">
   Follows Support Team KPI Dashboard &bull; Data from Support Team &ndash; Agent Reporting (private) &bull; May &ndash; November 2026
 </div>
@@ -381,7 +422,7 @@ var DATASETS = {
       {
         name: 'Roynalyn Malcampo',
         workedHrs: 188, days: 23.5, fulfilled: 658, noReply: 144,
-        fcr: 49.03, qa: 95.76, csat: null,
+        fcr: 49.03, qa: 90.17, csat: null,
         cxPerDay: 28, handleTime: '2:59', handlePerCust: '05:30',
         loginTime: '8:41', activeTime: '7:54', utilized: 91.12,
         chatAHT: '34:44', fulfByResp: 514
@@ -482,7 +523,7 @@ var DATASETS = {
         chatAHT: '00:18', fulfByResp: 301
       },
       {
-        name: 'Jessica Ibañez',
+        name: 'Jessica Iba\xf1ez',
         workedHrs: 31, days: 3.9, fulfilled: 145, noReply: 26,
         fcr: 79.63, qa: null, csat: null,
         cxPerDay: 30, handleTime: '5:38', handlePerCust: '11:11',
@@ -567,8 +608,12 @@ function fmtDate(iso) {
 
 var _sel     = getDatesFromURL();
 var DATASET  = DATASETS[_sel.key];
-var AGENTS   = DATASET.agents;
-var TEAM     = DATASET.team;
+var ALL_AGENTS = DATASET.agents;
+// Core agents drive the Team Summary, charts, table and team averages.
+// New agents (newAgent: true) are excluded from averages and shown in their own section.
+var AGENTS     = ALL_AGENTS.filter(function(a){ return !a.newAgent; });
+var NEW_AGENTS = ALL_AGENTS.filter(function(a){ return a.newAgent; });
+var TEAM       = computeTeam(AGENTS);   // stored DATASET.team is ignored
 var RANGE    = fmtDate(DATASET.startISO) + ' – ' + fmtDate(DATASET.endISO);
 
 // ─── State ──────────────────────────────────────────────────────────────────
@@ -577,7 +622,7 @@ var charts = [];
 
 const COLORS = ['#1a56db', '#7c3aed', '#057a55'];
 
-// ─── Helpers ────────────────────────────────────────────────────────────
+// ─── Helpers ────────────────────────────────────────────────────────────────
 function na(v, suffix, decimals) {
   if (v == null) return '<span class="tag-na">N/A</span>';
   var s = (decimals != null ? v.toFixed(decimals) : v) + (suffix || '');
@@ -602,6 +647,30 @@ function tagFCR(v) {
   if (v == null) return '<span class="tag-na">N/A</span>';
   var cls = v >= 70 ? 'tag-good' : v >= 50 ? 'tag-warn' : 'tag-bad';
   return '<span class="' + cls + '">' + v.toFixed(2) + '%</span>';
+}
+
+// ─── Team averages (core agents only) ───────────────────────────────────────
+function _vals(list, k) { return list.map(function(a){ return a[k]; }).filter(function(x){ return x != null && x !== ''; }); }
+function _avg(list, k) { var v = _vals(list, k); return v.length ? v.reduce(function(s,x){ return s + x; }, 0) / v.length : null; }
+function _r(x, d) { if (x == null) return null; var f = Math.pow(10, d); return Math.round(x * f) / f; }
+function _avgClock(list, k, padFirst) {
+  var v = _vals(list, k).map(function(s){ var p = String(s).split(':').map(Number); return p[0] * 60 + p[1]; });
+  if (!v.length) return null;
+  var m = Math.round(v.reduce(function(s,x){ return s + x; }, 0) / v.length);
+  var a = Math.floor(m / 60), b = m % 60;
+  return (padFirst && a < 10 ? '0' : '') + a + ':' + (b < 10 ? '0' : '') + b;
+}
+function computeTeam(list) {
+  return {
+    workedHrs: _r(_avg(list,'workedHrs'),1), days: _r(_avg(list,'days'),1),
+    fulfilled: _r(_avg(list,'fulfilled'),0), noReply: _r(_avg(list,'noReply'),0),
+    fcr: _r(_avg(list,'fcr'),2), qa: _r(_avg(list,'qa'),2), csat: _r(_avg(list,'csat'),2),
+    cxPerDay: _r(_avg(list,'cxPerDay'),1),
+    handleTime: _avgClock(list,'handleTime',false), handlePerCust: _avgClock(list,'handlePerCust',true),
+    loginTime: _avgClock(list,'loginTime',false), activeTime: _avgClock(list,'activeTime',false),
+    utilized: _r(_avg(list,'utilized'),2), chatAHT: _avgClock(list,'chatAHT',true),
+    fulfByResp: _r(_avg(list,'fulfByResp'),0)
+  };
 }
 
 // ─── DOMContentLoaded ───────────────────────────────────────────────────────
@@ -683,7 +752,7 @@ function renderKpi() {
     return '<div class="kpi-card ' + c.cls + (c.extra ? ' ' + c.extra : '') + '">'
       + '<div class="label">' + c.label + '</div>'
       + '<div class="value">' + c.val + '</div>'
-      + '<div class="sub">Team avg \xb7 ' + RANGE + '</div>'
+      + '<div class="sub">Team avg (excl. new agents) \xb7 ' + RANGE + '</div>'
       + '</div>';
   }).join('');
 }
@@ -728,56 +797,49 @@ function renderCharts() {
 }
 
 // ─── Full metrics table ───────────────────────────────────────────────────────
+function metricsRow(a, isTeam) {
+  var cls = isTeam ? ' class="avg-row"' : '';
+  return '<tr' + cls + '>'
+    + '<td>' + (isTeam ? 'Team Avg' : a.name) + '</td>'
+    + '<td>' + na(a.workedHrs) + '</td>'
+    + '<td>' + na(a.days) + '</td>'
+    + '<td>' + na(a.fulfilled) + '</td>'
+    + '<td class="col-mtd">'   + na(a.noReply)       + '</td>'
+    + '<td class="col-mtd">'   + tagFCR(a.fcr)        + '</td>'
+    + '<td class="col-mtd">'   + tagPct(a.qa, 95, 90) + '</td>'
+    + '<td class="col-mtd">'   + na(a.csat, '%', 2)   + '</td>'
+    + '<td class="col-daily">' + na(a.cxPerDay)       + '</td>'
+    + '<td class="col-daily">' + naStr(a.handleTime)  + '</td>'
+    + '<td class="col-daily">' + naStr(a.handlePerCust) + '</td>'
+    + '<td class="col-login">' + naStr(a.loginTime)   + '</td>'
+    + '<td class="col-login">' + naStr(a.activeTime)  + '</td>'
+    + '<td class="col-login">' + tagUtil(a.utilized)  + '</td>'
+    + '<td class="col-chat">'  + naStr(a.chatAHT)     + '</td>'
+    + '<td>'                   + na(a.fulfByResp)      + '</td>'
+    + '</tr>';
+}
+
 function renderTable() {
   var list = getActive();
   var tbody = document.getElementById('table-body');
   tbody.innerHTML = '';
-
-  function row(a, isTeam) {
-    var cls = isTeam ? ' class="avg-row"' : '';
-    return '<tr' + cls + '>'
-      + '<td>' + (isTeam ? 'Team Avg' : a.name) + '</td>'
-      + '<td>' + na(a.workedHrs) + '</td>'
-      + '<td>' + na(a.days) + '</td>'
-      + '<td>' + na(a.fulfilled) + '</td>'
-      + '<td class="col-mtd">'   + na(a.noReply)       + '</td>'
-      + '<td class="col-mtd">'   + tagFCR(a.fcr)        + '</td>'
-      + '<td class="col-mtd">'   + tagPct(a.qa, 95, 90) + '</td>'
-      + '<td class="col-mtd">'   + na(a.csat, '%', 2)   + '</td>'
-      + '<td class="col-daily">' + na(a.cxPerDay)       + '</td>'
-      + '<td class="col-daily">' + naStr(a.handleTime)  + '</td>'
-      + '<td class="col-daily">' + naStr(a.handlePerCust) + '</td>'
-      + '<td class="col-login">' + naStr(a.loginTime)   + '</td>'
-      + '<td class="col-login">' + naStr(a.activeTime)  + '</td>'
-      + '<td class="col-login">' + tagUtil(a.utilized)  + '</td>'
-      + '<td class="col-chat">'  + naStr(a.chatAHT)     + '</td>'
-      + '<td>'                   + na(a.fulfByResp)      + '</td>'
-      + '</tr>';
-  }
-
-  list.forEach(function(a){ tbody.innerHTML += row(a, false); });
-  tbody.innerHTML += row(TEAM, true);
+  list.forEach(function(a){ tbody.innerHTML += metricsRow(a, false); });
+  tbody.innerHTML += metricsRow(TEAM, true);
 }
 
 // ─── Agent cards ──────────────────────────────────────────────────────────────
-function renderCards() {
-  var list = getActive();
-  var grid = document.getElementById('agent-cards-grid');
-  if (!list.length) { grid.innerHTML = ''; return; }
-
-  function sv(label, val, cls) {
-    return '<div class="stat-item">'
-      + '<div class="stat-label">' + label + '</div>'
-      + '<div class="stat-value' + (cls ? ' ' + cls : '') + '">'
-      + (val != null ? val : '<span class="na">N/A</span>') + '</div></div>';
-  }
-  function svPct(label, v, good, warn) {
-    var val = v != null ? v.toFixed(2) + '%' : null;
-    var cls = v != null ? (v >= good ? 'good' : v >= warn ? 'warn' : 'bad') : '';
-    return sv(label, val, cls);
-  }
-
-  grid.innerHTML = list.map(function(a, i) {
+function sv(label, val, cls) {
+  return '<div class="stat-item">'
+    + '<div class="stat-label">' + label + '</div>'
+    + '<div class="stat-value' + (cls ? ' ' + cls : '') + '">'
+    + (val != null ? val : '<span class="na">N/A</span>') + '</div></div>';
+}
+function svPct(label, v, good, warn) {
+  var val = v != null ? v.toFixed(2) + '%' : null;
+  var cls = v != null ? (v >= good ? 'good' : v >= warn ? 'warn' : 'bad') : '';
+  return sv(label, val, cls);
+}
+function agentCard(a, i) {
     var color    = COLORS[i % COLORS.length];
     var initials = a.name.split(' ').map(function(w){ return w[0]; }).join('').slice(0,2).toUpperCase();
     var utilCls  = a.utilized != null ? (a.utilized >= 90 ? 'good' : a.utilized >= 80 ? 'warn' : 'bad') : '';
@@ -801,7 +863,34 @@ function renderCards() {
       + sv('No Reply Needed',   a.noReply)
       + sv('Fulfilled by Resp', a.fulfByResp)
       + '</div></div>';
-  }).join('');
+}
+
+function renderCards() {
+  var list = getActive();
+  var grid = document.getElementById('agent-cards-grid');
+  if (!list.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = list.map(agentCard).join('');
+}
+
+// ─── New agent section (excluded from team averages) ─────────────────────────
+function hasData(a) {
+  return ['workedHrs','fulfilled','fcr','qa','cxPerDay','handlePerCust','utilized'].some(function(k){ return a[k] != null; });
+}
+function renderNewAgents() {
+  var sec = document.getElementById('new-agent-section');
+  var div = document.getElementById('new-agent-divider');
+  if (!NEW_AGENTS.length) { sec.style.display = 'none'; div.style.display = 'none'; return; }
+  document.getElementById('new-agent-title').textContent =
+    'New Agent \u2014 ' + NEW_AGENTS.map(function(a){ return a.name; }).join(', ');
+  var withData = NEW_AGENTS.filter(hasData);
+  var tbody = document.getElementById('new-agent-body');
+  var wrap  = document.getElementById('new-agent-table-wrap');
+  var empty = document.getElementById('new-agent-empty');
+  wrap.style.display  = withData.length ? '' : 'none';
+  empty.style.display = withData.length ? 'none' : '';
+  tbody.innerHTML = withData.map(function(a){ return metricsRow(a, false); }).join('');
+  document.getElementById('new-agent-cards').innerHTML =
+    withData.map(function(a, i){ return agentCard(a, 2 + i); }).join('');
 }
 
 // ─── Render all ───────────────────────────────────────────────────────────────
@@ -810,6 +899,7 @@ function render() {
   renderCharts();
   renderTable();
   renderCards();
+  renderNewAgents();
 }
 </script>
 </body>
